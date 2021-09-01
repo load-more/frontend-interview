@@ -1634,11 +1634,25 @@ BFC 块级格式上下文。
 `块变挂重暂初指`
 
 1. 块级作用域
+
 2. 变量提升
+
+   编译时，会把所有用 var 声明的变量收集起来，放在头部，并且赋值为 undefined。
+
 3. 挂载到全局变量
+
+   本质上是，如果不用声明变量，会沿着作用域链一层层往上找，直到 window 对象，所以直接给为声明的变量赋值，会被挂载到全局变量 window 上。
+
 4. 重复声明
-5. 暂时性死区（在使用let、const命令声明变量之前，该变量都是不可用的。这在语法上，称为**暂时性死区**。使用var声明的变量不存在暂时性死区。）
+
+5. 暂时性死区
+
+   在相应花括号形成的作用域中，存在一个“死区”，起始于函数开头，终止于相关变量声明的一行。在这个范围内无法访问 let 或 const 声明的变量。
+
+   在使用let、const命令声明变量之前，该变量都是不可用的。这在语法上，称为**暂时性死区**。使用var声明的变量不存在暂时性死区。
+
 6. 初始值设置
+
 7. 指针指向修改
 
 #### 箭头函数
@@ -2055,6 +2069,13 @@ JS 引擎通过执行上下文栈管理所有的执行上下文。
 - 使函数外部可以访问到函数内部的变量，可以创建私有变量。
 - 使函数执行完之后，函数内部的变量不会立马被销毁，而是留在内存中。
 
+应用场景：
+
+1. 防抖函数、节流函数
+2. 单例模式的实现
+3. IIFE 自执行函数，可能会引用外部变量
+4. 定时器中的回调函数，可能会引用外部变量
+
 ### Iterator Generator
 
 Iterator 为各种数据结构提供一个统一的、简便的访问接口，主要用于 ES6 中的 for...of 循环。
@@ -2231,6 +2252,13 @@ MVC
 #### 9. 如何保存页面的当前的状态
 
 #### 10. 常见的事件修饰符及其作用
+
+- `.stop` 阻止事件冒泡，相当于 `event.stopPropagation()`
+- `.prevent` 阻止默认事件的发生，相当于 `event.preventDefault()`
+- `.once` 事件只触发一次
+- `.capture` 事件在捕获阶段触发
+- `.native` 把组件变成一个普通标签，使其可以触发原生事件
+- `.self` 表示事件只能由自身触发，而不能在冒泡或捕获阶段触发
 
 #### 11. v-if、v-show、v-html 的原理
 
@@ -2519,7 +2547,8 @@ $listener: 包含了组件所有的事件监听器。
 2. history 模式
    - history 模式通过 `window.history` 的 pushState 和 replaceState 这两个 API 实现的，前者会增加一个历史记录，后者会替换当前历史记录；
    - 通过监听 popstate 事件监听 url 的变化，从而控制页面的跳转；
-   - pushState 和 replaceState 不会触发 popstate 事件，需要手动触发页面跳转或者使用 history 的 go、back、forward 跳转页面。
+   - pushState 和 replaceState 不会触发 popstate 事件，需要手动触发页面跳转或者使用 history 的 go、back、forward 跳转页面；
+   - history 需要前后端的配置，兼容性不是很好。
 
 #### 1. Vue-Router 的懒加载如何实现
 
@@ -2538,6 +2567,22 @@ $listener: 包含了组件所有的事件监听器。
 #### 8. params和query的区别
 
 #### 9. Vue-router 导航守卫有哪些
+
+全局导航守卫：
+
+- beforeEach
+- beforeResolve
+- afterEach
+
+路由独享守卫：
+
+- beforeEnter
+
+组件内守卫：
+
+- beforeRouteEnter
+- beforeRouteUpdate
+- beforeRouteLeave
 
 ### Vuex
 
@@ -2601,7 +2646,7 @@ store.dispatch('increment')
 
 2. reactive、ref、toRef 和 toRefs
 
-   Vue3 中使用 reactive 封装响应式对象，用 ref 封装响应式的值类型数据，toRef 和 toRefs 用于将 reactive 对象解构单个或全部响应式属性。
+   Vue3 中使用 reactive 封装响应式对象，用 ref 封装响应式的值类型数据，toRef 和 toRefs 用于将 reactive 对象解构单个或全部响应式属性。（这些属性都会用在 Composition API 中）
 
 3. Proxy
    Vue3 响应式数据的监测是基于 ES6 中的 Proxy。
