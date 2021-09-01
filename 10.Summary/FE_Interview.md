@@ -1906,7 +1906,7 @@ JS 引擎通过执行上下文栈管理所有的执行上下文。
 
 5. 构造函数 + 原型模式
 
-   组合了构造函数模式和原型模式，通过构造函数模式可以初始化一些基本类型的属性和方法，利用原型模式设置对象的公共方法。
+   组合了构造函数模式和原型模式，通过构造函数模式可以初始化对象的属性，利用原型模式设置对象的公共方法。
    
    > 这是创建自定义类型的最常见方式。因为构造函数模式和原型模式分开使用都存在一些问题，因此我们可以组合使用这两种模式，通过构造函数来初始化对象的属性，通过原型对象来实现函数方法的复用。这种方法很好的解决了两种模式单独使用时的缺点，但是有一点不足的就是，因为使用了两种不同的模式，所以对于代码的封装性不够好。
 
@@ -1918,8 +1918,30 @@ JS 引擎通过执行上下文栈管理所有的执行上下文。
 
    缺点：
 
-   - 在包含有引用类型的数据时，会被所有实例共享，容易造成数据的篡改。
+   - 当父类的原型对象包含有引用类型的数据时，会被所有实例共享，容易造成数据的篡改。
    - 创建子类型时不能向父类型传递参数。
+
+   ```js
+    function Super() {
+     this.name = 'super_name'
+     this.age = 'super_age'
+   }
+   Super.prototype.sayName = function() {
+     console.log(this.name);
+   }
+   
+   function Sub(gender) {
+     this.gender = 'sub_gender'
+   }
+   
+   Sub.prototype = new Super()  // 修改子类的原型对象，使之指向父类的实例
+   Sub.prototype.construtor = Sub
+   
+   const sub = new Sub()
+   sub.sayName() // super_name
+   ```
+
+   
 
 2. 构造函数继承
 
@@ -1927,15 +1949,92 @@ JS 引擎通过执行上下文栈管理所有的执行上下文。
 
    缺点：不能继承父类原型对象中的属性和方法。
 
+   ```JS
+   function Super() {
+     this.name = 'super_name'
+     this.age = 'super_age'
+   }
+   Super.prototype.sayName = function() {
+     console.log(this.name);
+   }
+   
+   function Sub() {
+     Super.call(this)
+     this.gender = 'sub_gender'
+   }
+   const sub = new Sub()
+   console.log(sub.name);  // 只能继承父类在构造函数中的属性或方法，不能继承原型链中的属性或方法
+   console.log(sub.age);
+   console.log(sub.gender);
+   ```
+
+   
+
 3. 组合继承
 
    结合了原型链继承和构造函数继承。
 
    缺点是整个过程调用了两次父类的构造函数，会在子类的原型对象和实例对象中创建两份相同的属性或方法。
 
+   ```js
+   function Super() {
+     this.name = 'super_name'
+     this.age = 'super_age'
+   }
+   Super.prototype.sayName = function() {
+     console.log(this.name);
+   }
+   
+   function Sub() {
+     Super.apply(this) // 第二次调用Super()：给sub实例写入两个属性name，age
+     this.gender = 'sub_gender'
+   }
+   
+   Sub.prototype = new Super() // 第一次调用Super()：给Sub.prototype写入两个属性name，age
+   Sub.prototype.construtor = Sub
+   const sub = new Sub()
+   console.log(sub.name); // 通过上述两种方式的组合，实现了构造函数和原型链中的继承
+   console.log(sub.age);
+   console.log(sub.gender);
+   sub.sayName() 
+   // 缺点：是在创建子类对象的过程中调用了两次父类构造函数，使得子类的实例对象和原型对象中有两份相同的属性/方法。
+   ```
+
+   
+
 4. 寄生组合继承
 
-   是组合继承的改进，寄生组合继承创建了父类原型对象的副本，将子类的原型对象指向了这个副本，从而避免了属性或方法的重复。
+   是组合继承的改进，寄生组合继承创建了空的实例对象，将其指向了父类的原型对象，这样在构造函数里面执行的初始化不会作用到创建的实例对象上，从而避免了属性或方法的重复。
+
+   ```js
+   function Super() {
+     this.name = 'super_name'
+     this.age = 'super_age'
+   }
+   Super.prototype.sayName = function() {
+     console.log(this.name);
+   }
+   
+   function Sub() {
+     Super.apply(this) // 第二步，新建子类实例时，调用父类构造函数，继承其属性/方法
+     this.gender = 'sub_gender'
+   }
+   
+   (function() {
+     let prototype = Object.create(Super.prototype) // 第一步，根据父类的原型对象创建一个实例对象（和直接使用 new 创建实例对象相比，不会执行构造函数里面的代码，相当于创建的是一个空的实例对象，将实例对象的 __proto__指向 prototype）
+     Sub.prototype = prototype // 使子类原型对象指向这个空的实例对象
+     prototype.constructor = Sub
+   })()
+   
+   const sub = new Sub()
+   
+   console.log(sub.name); // 通过上述两种方式的组合，实现了构造函数和原型链中的继承
+   console.log(sub.age);
+   console.log(sub.gender);
+   sub.sayName() 
+   ```
+
+   
 
 5. class的extends继承
 
