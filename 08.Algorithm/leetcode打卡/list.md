@@ -78,3 +78,8 @@
 
 冲刺039：验证二叉搜索树（https://leetcode-cn.com/problems/validate-binary-search-tree/）
 
+冲刺040：对称二叉树（https://leetcode-cn.com/problems/symmetric-tree/）
+
+冲刺041：路径总和（https://leetcode-cn.com/problems/path-sum/）
+
+冲刺042：路径总和 II（https://leetcode-cn.com/problems/path-sum-ii/）
