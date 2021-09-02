@@ -3063,6 +3063,110 @@ arr.myForEach((item, index, arr) => console.log(item, index, arr))
 
 
 
+## Webpack
+
+> https://juejin.cn/post/6844904094281236487
+
+### 1.常见loader
+
+- 处理图片、字体文件的 loader：file-loader、url-loader
+- 处理 CSS 文件的 loader：css-loader、style-loader、sass-loader、postcss-loader
+- 处理 ES6 语法：babel-loader
+- eslint-loader
+- vue-loader
+
+### 2.常见plugin
+
+- html-webpack-plugin：打包结束后生成 html 文件
+- clean-webpack-plugin：打包开始前删除指定目录
+- webpack.HotModuleReplacementPlugin：热更新
+- mini-css-extract-plugin：提取 css 文件
+- webpack-bundle-analyzer：分析打包文件
+- webpack-merge：提取公共配置
+
+### 3.loader和plugin的区别
+
+- loader 本质上是一个函数，它负责将函数接收到的内容 source 进行转换，然后返回转换后的结果。因为 webpack 只能识别 JavaScript，所以 loader 就相当于翻译官，将其它格式的文件转换成 JavaScript。
+- plugin 本质上是一个类，它负责在 webpack 打包过程的某一时刻处理一些事情，webpack 运行过程（生命周期）中会广播出一些钩子函数，plugin 可以监听到这些钩子函数并完成某些操作。
+
+### 4.module、chunk、bundle 区别
+
+- module：各个源码文件，import 引入的、export 引出的代码都是 module；
+- chunk：多个模块合并成的代码块，一般在内存中；
+- bundle：打包生成的文件。
+
+![](https://gitee.com/gainmore/imglib/raw/master/img/20210731101526.png)
+
+### 5.Webpack构建流程简单说一下
+
+1. 启动构建，读取并合并配置参数，加载 plugin，实例化 Compiler；
+2. 从 entry 开始，针对每个模块调用调用对应的 loader 去翻译文件的内容，再找到模块依赖的 module，然后递归地进行编译；
+3. 将编译后的 module 组合成 chunk，将 chunk 转换成文件，输出到文件系统中。
+
+### 6.Webpack 的热更新原理
+
+- webpack-dev-server 和浏览器之间维护了一个 websocket，当本地资源发生变化时，webpack-dev-server 会向浏览器推送更新，并且带上构建时的 hash 值；
+- 浏览器将 hash 值和上一次的比对之后会向 webpack-dev-server 发送 ajax 请求来获取更改的内容，之后浏览器根据这些内容继续向 webpack-dev-server 发送 jsonp 请求获取该 chunk 的增量更新。
+
+### 7.如何优化 Webpack 的构建速度？
+
+- 使用`高版本`的 Webpack 和 Node.js；
+- `多进程/多实例构建`：HappyPack(不维护了)、thread-loader；
+- `缩小打包的作用范围`：1. 使用 include 或者 exclude 确定 loader 的作用范围；2. 使用 `IgnorePlugin` 完全某些模块的打包；3. 使用 `noParse` 跳过某些已经打包过的文件（比如一些第三方库 min.js）；
+- `压缩代码`：1. webpack-parallel-uglify-plugin 多进程并行压缩 JS；2. 通过 mini-css-extract-plugin 提取 Chunk 中的 CSS 代码到单独文件，通过 css-loader 的 minimize 选项开启压缩 CSS；
+- `CDN加速`：对于一些体积较大的第三方库，使用 CDN 引入；
+- `DLLPlugin`：使用 DLLPlugin 将一些体积较大且改动较少的第三方模块提取出来，只打包一次，后面就不再打包这些模块；
+
+### 8.什么是polyfill？
+
+- polyfill 意为垫片，相当于补丁，提高兼容性
+
+  - 比如，一个新的数组 API ：`includes`，使用 `[1, 2, 3].includes(1)` 的形式符合 ES5 的语法规范，但是 ES5 却没有 `includes` 这个 API，而 polyfill 就是能够处理这些新的 API 的一种补丁
+
+    ```js
+    import '@babel/polyfill'
+    
+    const sum = (a, b) => a + b
+    
+    // 新的API
+    Promise.resolve(100).then(data => data)
+    
+    // 新的API
+    [10, 20, 30].includes(20)
+    
+    // 这些新的 API 在语法上都符合 ES5 的规范，但是 ES5 却没有这些 API，所以要使用 polyfill 实现兼容
+    // 注意，polyfill 不会处理模块化（即import导入），处理模块化是 webpack 的任务
+    ```
+
+- core-js 和 regenerator
+
+  - core-js 是包含绝大部分 polyfill 的集合，比如处理 `Promise`、`includes` 等 API 的 polyfill，但却不包含处理 ES6 中 Generator 的 polyfill
+  - 而 regenerator 则是处理 Generator 的 polyfill 的集合
+
+- babel-polyfill 即为两者的集合
+
+### 9.babel-polyfill和babel-runtime的区别
+
+- babel-polyfill 会污染全局
+- babel-runtime 不会污染全局
+- 产出第三方 lib 要用 babel-runtime
+
+### 10.webpack相关概念
+
+配置项：
+
+- mode
+- entry
+- output
+- module: [{ rules: {} }]
+- plugins
+
+高级概念：
+
+- HMR
+- Tree Shaking
+- Code Splitti
+
 ## 项目
 
 ### 移动端适配

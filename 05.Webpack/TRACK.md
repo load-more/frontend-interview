@@ -1781,6 +1781,8 @@ IgnorePlugin 避免引入无用模块（可用于生产环境）
 
 noParse 避免重复打包（可用于生产环境）
 
+一般使用`.min.js`结尾的文件，都是已经经过模块化处理的，那么这个时候就没必要在进行 loader 或者 webpack 分析了，noParse 的字面意思也是不再解析。
+
 ```js
 module.exports = {
     module: {
@@ -1794,7 +1796,7 @@ module.exports = {
 IgnorePlugin vs noParse
 
 - IgnorePlugin 直接不引入，代码中没有
-- noParse 引入，但是不打包
+- noParse 该引入的还是会引入，只是不参与 loader 和 webpack 的解析和打包
 
 
 
@@ -2098,7 +2100,7 @@ Scope Hoisting
 
 - presets 和 plugins
 
-  presets，即预设，它是 Babel 插件的组合，解析一个 ES6 语法对应一个插件，而 ES6 中包含很多语法，所以就对应许多插件，如果手写这些插件就十分麻烦，所以将这些插件组合到一起行程了一个预设，如 `@babel/preset-env`。
+  **presets，即预设，它是 Babel 插件的组合**，解析一个 ES6 语法对应一个插件，而 ES6 中包含很多语法，所以就对应许多插件，如果手写这些插件就十分麻烦，所以将这些插件组合到一起行程了一个预设，如 `@babel/preset-env`。
 
 
 
