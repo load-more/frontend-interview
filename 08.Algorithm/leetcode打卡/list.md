@@ -83,3 +83,9 @@
 冲刺041：路径总和（https://leetcode-cn.com/problems/path-sum/）
 
 冲刺042：路径总和 II（https://leetcode-cn.com/problems/path-sum-ii/）
+
+冲刺043：二叉树中的最大路径和（https://leetcode-cn.com/problems/binary-tree-maximum-path-sum/）
+
+冲刺044：求根节点到叶节点数字之和（https://leetcode-cn.com/problems/sum-root-to-leaf-numbers/）
+
+冲刺045：环形链表 II（https://leetcode-cn.com/problems/linked-list-cycle-ii/）
