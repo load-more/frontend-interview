@@ -3212,6 +3212,64 @@ arr.myForEach((item, index, arr) => console.log(item, index, arr))
 
 
 
+### 项目难点
+
+#### 大数字问题
+
+在做文章详情页面的时候，点击某篇文章跳转到对应的详情页时，会出现 404 的问题。后来检查发现，请求时的文章 id 和后端返回的文章 id 不一致。
+
+经过查缺资料，了解到 JavaScript 有一个安全整数范围，只有 number 类型的值在这个范围之内才能准确表示（±2^53）。
+
+后端返回的数据是 JSON 类型的字符串，而 axios 会自动把后端返回的数据通过 `JSON.parse()` 转换成 JavaScript 对象，在这个过程中，如果有一些数据超出了安全整数范围就会变得不准确，所以请求就可能会出现 404。
+
+为了解决这个问题，在项目中引入了一个第三方包 `json-bigint`，使用这个包的 `parse` 方法可以将大数字转换成一个 bignumber 的对象，然后通过 `toString` 方法可以将这个对象转换成字符串。
+
+通常会把转换的操作放到 axios 里的 `transformResponse` 里完成，在这个 API 里可以自定义处理从后端返回的原始数据。
+
+#### 修改头像
+
+**1. 点击按钮，弹出文件选择框**
+
+首先会增加一个 type 类的 input 标签，通常会这个标签隐藏起来，然后通过点击某个按钮，触发 input 标签的点击事件，弹出文件选择窗。
+
+**2. 根据选择的图片，生成预览图片**
+
+监听到 input 标签的 fileChange 事件，使用 `window.URL.createObjectURL` 生成一个预览图片的链接，用于本地预览。
+
+**3. 使用第三方库，实现图片裁切的效果**
+
+创建一个 cropperjs 实例，配置一些关于图片裁切的参数。
+
+**4. 更新图片**
+
+当用户点击确认修改按钮后，首先把生成的预览图片链接替换掉原来图片的 URL（减少一次图片请求），然后再把裁切后的文件上传到服务器。
+
+上传图片，首先新建一个 FormData() 对象，然后向这个对象中 `append` 一些字段和对应的数据，再调用接口请求将这个 FormData 对象作为请求体的参数传入即可。
+
+#### 登录
+
+> https://www.jianshu.com/p/cab856c32222
+
+项目使用的 JWT 实现登录的认证。
+
+- 首先，用户在浏览器输入用户名和密码，服务器校验用户名和密码，校验通过后生成 Access Token 和 Refresh Token 并返回给浏览器；
+- 浏览器收到两个 Token 之后，就把它们存储到 localStorage 之中，浏览器每次请求的时候，都会取出 Access Token 放到请求头中的 Authorization 字段中（`Bearer `）；
+- 服务器收到请求之后，就会检验 Token，Token 一般由三个部分组成：header、payload、signature，header 指明了签名算法，payload 指明了用户 id 以及一些基本信息，signature 是服务端根据签名算法和密钥将 header 和 payload 加密生成的数字签名；
+- 当服务器收到 Token 之后，首先取出其中的 header 和 payload，根据密钥和签名算法将它们进行加密生成签名，然后再和 Token 中的 signature 进行比对，如果一致说明 Token 未被篡改，然后就取出 payload 的用户 id 查询数据库，返回相应数据给浏览器；
+- Access Token 的有效时间一般比 Refresh Token 短，所以当 Access Token 过期之后，浏览器就会发送 Refresh Token 给服务器，服务器验证通过后，就返回新的 Access Token 和 Refresh Token。
+
+#### 处理页面访问权限
+
+利用路由中的 meta 属性，将 meta 属性加入 requireAuth 字段，需要登录的页面设置为 true，不需要登录的页面设置为 false。
+
+然后使用全局路由导航守卫的 beforeEach 钩子函数，在每次路由跳转之前，检查跳转到的路由的 requireAuth 是否为 true，如果是 true 说明需要登录验证，然后检查 localStorage 中是否有 token，有的话就直接跳转。
+
+#### 数据持久化
+
+#### 性能优化
+
+
+
 
 ## 智力题
 
