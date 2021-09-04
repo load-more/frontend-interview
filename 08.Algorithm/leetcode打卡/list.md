@@ -96,3 +96,9 @@
 
 冲刺048：用栈实现队列（https://leetcode-cn.com/problems/implement-queue-using-stacks/）
 
+冲刺049：二叉树的完全性检验（https://leetcode-cn.com/problems/check-completeness-of-a-binary-tree/）
+
+冲刺050：剑指 Offer 22. 链表中倒数第k个节点（https://leetcode-cn.com/problems/lian-biao-zhong-dao-shu-di-kge-jie-dian-lcof/）
+
+冲刺051：剑指 Offer 36. 二叉搜索树与双向链表（https://leetcode-cn.com/problems/er-cha-sou-suo-shu-yu-shuang-xiang-lian-biao-lcof/）
+
