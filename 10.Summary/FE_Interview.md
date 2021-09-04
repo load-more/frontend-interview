@@ -213,6 +213,15 @@ TCP采用的是大小可变的滑动窗口进行流量控制。
 
 #### 8. TCP的可靠传输机制
 
+> - https://blog.csdn.net/guoweimelon/article/details/50879588
+> - https://blog.csdn.net/qq_33314107/article/details/81607630
+
+TCP 的可靠传输是基于 `连续ARQ协议` 和 `滑动窗口协议` 的。
+
+- 连续ARQ（Automatic Repeat reQuest）协议是基于 `停止等待ARQ协议`的。在停止等待ARQ协议中，最重要的两个概念就是停止等待和超时重传，发送方发送一组数据之后，就会暂停发送等待接收方的确认，在收到接收方的确认之后才会继续发送。每发送一次数据时，发送方就会开启一个超时计时器，如果计时结束之后还没有收到确认，发送方就会重新发送数据，如果达到一定次数还没有成功的话就会放弃并发送一个复位信号。
+- 由于停止等待ARQ协议的信道利用率太低，所以提出了连续ARQ协议，这个协议会连续发送一组数据包，然后再等待这些数据包的确认。
+- 连续ARQ协议通常要结合滑动窗口协议使用，发送方维持一个发送窗口，接收方维持一个接收窗口。发送方每收到一个确认，就把发送窗口向前滑动一个位置。接收方一般采用累计确认的方式，也就是说接收方不必对每个接收到的分组进行确认，而是在收到几个分组之后，对按序到达的最后一个分组发送确认。
+
 #### 9. TCP的三次握手
 
 初始状态时，客户端处于 closed 状态，服务端处于 listen 状态。
@@ -257,9 +266,19 @@ WebSocket 的出现解决了半双工通讯的弊端，最大特点就是：浏�
 
 #### 2. WebSocket 特点
 
-#### 3. Websocket的使用
+#### 3. WebSocket的使用
 
 #### 4. 即时通讯的实现：短轮询、长轮询、SSE 和 WebSocket 间的区别？
+
+#### 5. WebSocket的握手过程
+
+- 首先，客户端会向服务端发送一个 HTTP 协议的握手包，表示申请协议升级。这个握手包必须是 GET 请求而且 HTTP 版本不能小于 1.1，然后会有这些字段：`Connection: Upgrade`，`Upgrade: websocket`、`Sec-Websocket-version: 13`、`Sec-Websocket-key: 值为Base64格式的16字节随机字符串`；
+- 之后，服务端也会响应一个握手包并且状态码为 101 （切换协议），表示响应协议升级。这个握手包也有 `Connection: Upgrade` 和 `Upgrade: websocket` 字段，同时还增加了 `Sec-Websocket-Accept` 字段，这个字段的值是将一个固定字符串拼接到 `Sec-Websocket-key` 的后面，然后进行 `SHA-1` 加密并且转换成 Base64 格式得到的；
+- 最后，客户端收到握手包之后，会用同样的方式得到一个 `Sec-Websocket-key` 的值，然后和服务端发来的 `Sec-websocket-Accept` 比较，验证通过后就建立起 WebSocket 连接。
+
+
+
+
 
 
 ## 浏览器原理
@@ -528,6 +547,26 @@ CSRF 有三种类型：
 - IE浏览器：event.cancelBubble = true
 
 #### 3.事件委托
+
+```html
+<body>
+  <ul id="list">
+    <li>A</li>
+    <li>B</li>
+    <li>C</li>
+    <li>D</li>
+  </ul>
+  <script>
+    const list = document.getElementById('list')
+    list.addEventListener('click', (event) => {
+      // target 表示触发点击事件的那个元素
+      console.log(event.target.innerText)
+      // currentTarget 表示当前绑定事件的元素，相当于 this
+      console.log(event.currentTarget)
+    }, true)
+  </script>
+</body>
+```
 
 事件委托本质上是利用了事件冒泡的机制。因为事件可以冒泡到父节点，父节点可以通过事件对象获取到子节点，然后在父节点上绑定子节点的监听函数，这样父节点就可以统一处理多个子节点的事件，这个过程就叫做事件委托，也叫事件代理。
 
@@ -2437,6 +2476,32 @@ nextTick() 返回的是一个 Promise 对象。
 
 - 通过子组件 $emit 发送自定义个事件给父组件
 - 在父组件中调用子组件的 @hook 监听函数
+
+#### Vue有几类Watcher？
+
+> https://blog.csdn.net/qq_40413670/article/details/117714765
+
+1. data 里面的 Watcher；
+2. computed 里面的 Watcher；
+3. 用户自定义的 Watcher，即 watch 属性，可以定义 deep 和 immediate 属性。
+
+#### keep-alive原理
+
+> https://www.jianshu.com/p/9523bb439950
+
+keep-alive 作用？
+
+**keep-alive 用于保存组件的渲染状态，当使用 keep-alive 包裹动态组件时，会缓存不活动的组件，而不是销毁它们。**
+
+keep-alive 有三个常用属性：include、exclude、max。
+
+- include 是缓存白名单，被命中的组件会缓存；
+- exclude 是缓存黑名单，被命中的组件不会缓存；
+- max 是缓存组件的上限，超出上线的组件会按照 LRU 策略置换缓存数据。
+
+
+
+
 
 ### 生命周期
 
