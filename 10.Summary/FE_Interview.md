@@ -344,6 +344,12 @@ CSRF 有三种类型：
 
 #### 4. 进程之间的通信方式
 
+1. 管道通信。操作系统在内核中开辟一段缓存区（管道  pipe），进程1可以将数据拷贝到缓存区中，然后进程2就可以读取了。
+2. 消息队列通信；
+3. 信号量通信，信号量的本质是一个计数器，用来实现进程间的互斥和同步，例如信号量初始值为1，当进程1访问内存A时，信号量变为0，当进程2访问内存A时，发现信号量为0就无法访问内存A；
+4. 共享内存通信；
+5. 套接字通信，用于实现不同主机之间的进程通信。
+
 #### 5. 僵尸进程和孤儿进程是什么？
 
 #### 6. 死锁产生的原因？ 如果解决死锁的问题？
@@ -582,11 +588,24 @@ CSRF 有三种类型：
 
 ### CDN
 
+> https://juejin.cn/post/6844904190913822727
+
 #### 1. CDN的概念
 
 #### 2. CDN的作用
 
+- 用户就近访问内容，提高了资源的访问速度；
+- 分担了源站的压力；
+
 #### 3. CDN的原理
+
+CDN 的运行和 DNS 解析息息相关。
+
+首先，DNS 中存在许多资源记录（Name、Value、Type、TTL）。最常见的就是 A、CNAME、NS 记录。
+
+- A 记录是域名到 IP 地址的映射；
+- CNAME（Canonical Name 别名） 记录是域名到域名的映射；
+- NS 记录是域名到 DNS 服务器的映射。
 
 #### 4. CDN的使用场景
 
@@ -599,10 +618,10 @@ jsDelivr，打包第三方库的 cdn
 CDN 全称为内容分发网络，简单来说，它的作用就是利用距离用户最近的服务器让用户访问资源的速度更快。
 
 - 用户访问一个 url，首先会经过 DNS 解析域名；
-- 当本地 DNS 系统发现 url 对应的是一个 CDN 专用的 DNS 服务器时，会将域名解析权交给 CNAME 指向的 CDN 专用 DNS 服务器；
+- 当本地 DNS 系统发现 URL 对应的是一个 CDN 专用的 DNS 服务器时，会将域名解析权交给 CNAME 指向的 CDN 专用 DNS 服务器；
 - CDN 专用 DNS 服务器返回全局负载均衡设备的 IP 地址给用户；
 - 用户向这个全局负载均衡设备发起请求；
-- 全局负载均衡设备根据用户的 IP 地址以及请求的 url，选择一台用户所属区域的区域负载均衡设备；
+- 全局负载均衡设备根据用户的 IP 地址以及请求的 URL，选择一台用户所属区域的区域负载均衡设备；
 - 然后这个区域负载均衡设备选择一台合适的缓存服务器来提供服务，然后将该缓存服务器的 IP 地址返回给全局负载均衡设备；
 - 全局负载均衡设备就把这个缓存服务器的 IP 地址返回给用户；
 - 用户向该缓存服务器发起请求，缓存服务器响应用户的请求；
@@ -646,21 +665,28 @@ CDN 全称为内容分发网络，简单来说，它的作用就是利用距离�
 
 #### 1. 回流与重绘的概念及触发条件
 
+> DOM 树 -- 包含所有节点
+>
+> CSSOM 规则树 -- 包含所有样式
+>
+> Render 树 -- 包含所有可见元素（display: none 的元素或者一些 head 标签除外）
+
 回流：
 
-- 当渲染树中的部分元素或者全部元素的尺寸、结构发生变化时，导致部分文档或者全部文档重新渲染，这个过程就叫做回流
-- 比如浏览器窗口大小改变、元素的内容改变、元素的尺寸或者位置改变等会触发回流
+- 当渲染树中的部分元素或者全部元素的尺寸、结构或者位置发生变化时，导致部分文档或者全部文档重新渲染，这个过程就叫做回流；
+- 比如浏览器窗口大小改变、元素的内容改变、元素的尺寸或者位置改变等都会触发回流。
 
 重绘：
 
-- 当元素的样式发生改变，但不影响到其在文档流中的位置，浏览器就对它进行重新绘制，这个过程就叫做重绘
-- 比如修改 color、background-color、visibility、border-radius、box-shadow等属性会触发重绘
+- 当元素的样式发生改变，但不影响到其在文档流中的位置，浏览器就对它进行重新绘制，这个过程就叫做重绘；
+- 比如修改 color、background-color、visibility、border-radius、box-shadow等属性会触发重绘。
 
 #### 2. 如何避免回流与重绘？
 
-1. 定位方式使用 `absolute` 或者 `fixed`，这样可以使元素脱离文档流，就不会影响到其他元素，可以减少回流；
-2. 避免频繁操作 DOM，可以创建一个代码片段 `documentFragment`，把所有 DOM 操作都应用到这个片段上，然后再将它插入到文档中；
-3. 可以先将元素设置 `display: none`，操作完成后，在显示该元素，因为对 `display: none` 的元素的 DOM 操作不会引发回流和重绘。
+1. 可以使用 `transform`、`opacity`、`will-change: transform` 这些属性将元素提升到一个复合层中，可以避免回流重绘；
+2. 定位方式使用 `absolute` 或者 `fixed`，这样可以使元素脱离文档流，就不会影响到其他元素，可以减少回流；
+3. 避免频繁操作 DOM，可以创建一个代码片段 `documentFragment`，把所有 DOM 操作都应用到这个片段上，然后再将它插入到文档中；
+4. 可以先将元素设置 `display: none`，操作完成后，在显示该元素，因为对 `display: none` 的元素的 DOM 操作不会引发回流和重绘。
 
 #### 3. 如何优化动画？
 
@@ -1052,8 +1078,38 @@ window.requestAnimationFrame(callback)，需要传入一个回调函数，该回
 
 #### transform: translateZ(0) 的作用？
 
+> https://segmentfault.com/a/1190000008015671
+
 - translateZ(0) 将 2D 绘制转为了 3D 绘制，开启了 GPU 渲染（硬件加速），提高了浏览器渲染页面的性能；
-- 使用 transform 和 opacity 做 CSS 动画时，会将元素提升为一个复合层，而使用 JS 操作 CSS 属性做动画时必须使用  translateZ 或 will-change 才能将元素强行提升为一个复合层。
+- 使用 transform 和 opacity 做 CSS 动画时，会将元素提升为一个复合层，而使用 JS 操作 CSS 属性做动画时必须使用  `transfrom: translateZ(0)` 或 `will-change: transform` 才能将元素强行提升为一个复合层。
+
+> 复合层（下图中的 GPU Layer）中的元素只发生 composite，不会经历前面的回流重绘。只发生 composite 的属性需要满足以下三点：
+>
+> - 不影响文档流。
+> - 不依赖文档流。（position 的 left 等属性需要依赖文档流）
+> - 不会造成重绘。
+>
+> CSS 中只有 transform 和 opacity 两个属性满足上面三点，所以这两个元素可以提升至复合层。
+
+![](https://gitee.com/gainmore/imglib/raw/master/img/20210904230848.png)
+
+1. > 元素本身使用`transform`和`opacity`做CSS动画的时候，会提前告诉 GPU 动画如何开始和结束及所需要的指令；所以会创建一个复合层（渲染层），并把页面所有的复合层发送给 GPU；作为图像缓存，然后动画的发生仅仅是复合层间相对移动。
+
+2. > 而使用 js 做动画，js 必须在动画的每一帧计算元素的状态；发送给 GPU，但不会将元素提升至一个复合层；所以想让元素提升至一个复合层，必须使用`translateZ`或`will-change: transform`, `opacity`。
+
+#### transform与position:absolute 有什么区别？
+
+> https://zhuanlan.zhihu.com/p/78230297
+
+两者都能实现动画，但是 absolute 会造成回流和重绘，而 transform 不会。这是因为 transform 动画由 GPU 控制，支持硬件加速。
+
+当浏览器收到一个 HTML 后，会进行解析并构建 DOM 树。随后，浏览器可以根据 DOM 树和 CSS 构建出渲染树，渲染树是由页面上**需要渲染的元素**（像 `head` 标签以及 `display: none` 的元素则不渲染）组成的。每个渲染元素都会被分配给一个图形层，每个图形层则会被作为一个纹理（texture）提交给 GPU，GPU会把多个图像合成到屏幕上。而这里的秘密在于，图形层有可能会在没有重绘的情况下直接在 GPU 中转变，就比如 3D 图像。这个转变是由一个独立的合成器（Compositor）流程完成的，你可以阅读 [the composition in Chrome here](https://link.segmentfault.com/?url=https%3A%2F%2Fwww.chromium.org%2Fdevelopers%2Fdesign-documents%2Fgpu-accelerated-compositing-in-chrome) 了解更多。
+
+CSS transform 创建了一个可以直接被 GPU 转换的合成层（composite layer），在 Chrome's DevTools 中可以通过勾选「Show layer borders」选项查看合成层，每个合成层周围都会有个橙色的边框。
+
+
+
+
 
 ### 页面布局
 
