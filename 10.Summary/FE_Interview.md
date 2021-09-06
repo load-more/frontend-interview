@@ -339,7 +339,7 @@ CSRF 有三种类型：
 - 使用验证码。当要执行一些请求时，让用户输入验证码，执行通过后确认这是用户操作，才向服务器发送请求；
 - 服务器通过 referer 进行判断。如果 referer 不存在或者不是目标站点，就直接阻止请求，但是 referer 可以伪造，所以还有安全隐患；
 - 使用 CSRF Token。服务器返回一个随机数 Token，然后网站的每次请求都需要携带这个 Token，服务器要对 Token 和 cookie 进行验证，只有都验证通过后，才会返回响应结果；
-- 给 cookie 设置 Samesite，限制 cookie 不能被第三方站点使用。
+- 给 cookie 设置 Samesite，限制 cookie 不能被第三方站点使用。Samesite 有三个值，分别是 strict、lax 和 none，strict 表示完全禁止第三方站点使用 cookie，lax 宽松一点，只在 GET 请求中携带 cookie，none 表示不限制。 
 
 ### 进程与线程
 
@@ -1179,7 +1179,7 @@ CSS transform 创建了一个可以直接被 GPU 转换的合成层（composite 
    </body>
    ```
 
-3. absolute + margin-right
+3. absolute + margin-right（不用）
 
    ```html
    <style>
