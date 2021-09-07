@@ -2810,7 +2810,7 @@ diff 算法 - 通过 diff 算法比较新旧节点的差异，实现 DOM 的最�
 
 ### Javascript基础
 
-#### 1. 手写 Object.create
+#### 1. Object.create
 
 ```js
 function create(obj) { // 将传入的对象作为原型
@@ -2857,7 +2857,7 @@ function myNew(constructor, args) {
 
 
 
-#### 4. 手写 Promise
+#### 4. Promise
 
 ```js
 const PENDING = 'pending'
@@ -2923,7 +2923,7 @@ class MyPromise {
 
 #### 7. 手写 Promise.race
 
-#### 8. 手写防抖函数
+#### 8. debounce
 
 ```js
 function debounce(fn, wait) {
@@ -2943,7 +2943,7 @@ function debounce(fn, wait) {
 
 
 
-#### 9. 手写节流函数
+#### 9. throttle
 
 ```js
 function throttle(fn, wait) {
@@ -2961,25 +2961,136 @@ function throttle(fn, wait) {
 
 
 
-#### 10. 手写类型判断函数
+#### 10. 类型判断函数
 
-#### 11. 手写 call 函数
+```js
+function getType(data) {
+    let rst = Object.prototype.toString.call(data)
+    return rst.split(/[ \]]/)[1].toLowerCase()
+}
 
-#### 12. 手写 apply 函数
+const data = 'string'
+const rst = getType(data)
+console.log(rst)
+```
 
-#### 13. 手写 bind 函数
 
-#### 14. 函数柯里化的实现
+
+#### 11. call
+
+```js
+Function.prototype.myCall = function(context, ...args) {
+    let rst = null
+    context = context || window
+    context.fn = this
+    rst = context.fn(...args)
+    delete context.fn
+    return rst
+}
+
+// test
+const obj =  {}
+
+function setName(name) {
+    this.name = name
+}
+
+setName.myCall(obj, 'HELLO')
+console.log(obj)
+```
+
+
+
+#### 12. apply
+
+```js
+Function.prototype.myApply = function(context, args) {
+    let rst = null
+    context = context || window
+    context.fn = this
+    if (args) {
+        rst = context.fn(...args)
+    } else {
+        rst = context.fn()
+    }
+    delete context.fn
+    return rst
+}
+
+// test
+const obj =  {}
+
+function setInfo(name, age, gender) {
+    this.name = name
+    this.age = age
+    this.gender = gender
+}
+
+setInfo.myApply(obj)
+console.log(obj)
+```
+
+
+
+#### 13. bind
+
+```js
+Function.prototype.myBind = function(context, ...args1) {
+    const self = this
+    return function Fn(...args2) {
+        return self.apply(
+        	this instanceof Fn ? this : context,
+            args1.concat(args2)
+        )
+    }
+}
+
+// test
+const obj =  {}
+
+function setName(name, age, gender) {
+    this.name = name
+    this.age = age
+    this.gender = gender
+}
+
+const f = setName.myBind(obj, 'Tom')
+f(18, 'male')
+console.log(obj)
+```
+
+
+
+#### 14. 函数柯里化
+
+```js
+function curry(fn, ...args) {
+    // 如果 fn 参数少于或等于传入的参数，直接执行 fn；
+    // 否则进行递归
+    return fn.length <= args.length ? fn(...args) : curry.bind(null, fn, ...args)
+}
+
+// 当传入参数多于函数参数
+let curryPlus = curry((a,b,c,d) => a+b+c+d, 1,2,3,4,5)
+console.log(curryPlus) // 10
+
+// 当传入参数少于函数参数，注意参数不能多，否则会报错
+let curryPlus2 = curry((a,b,c,d) => a+b+c+d)
+const res = curryPlus2(1)(3)(2,5)
+console.log(res) // 11
+```
+
+
 
 #### 15. AJAX
 
 ```js
-function ajax(url) {
+function ajax(url, method, isAsync) {
   const xhr = new XMLHttpRequest()
-  xhr.open('GET', url, true)
+  xhr.open(method, url, isAsync)
   xhr.onreadystatechange = function() {
     if (this.readyState === 4) {
-      if (this.status === 200) {
+      if (this.status === 200 || this.status === 304) {
         handle(this.response)
       } else {
         console.error(this.statusText)
@@ -2994,19 +3105,23 @@ function ajax(url) {
   xhr.send(null)
 }
 
-ajax('http://www.baidu.com')
+// test
+const url = 'http://www.baidu.com'
+const method = 'GET'
+const isAsync = true
+ajax(url, method, isAsync)
 ```
 
 #### 16. Promise封装AJAX
 
 ```js
-function ajax(url, method, async) {
+function ajax(url, method, isAsync) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    xhr.open(method, url, async)
+    xhr.open(method, url, isAsync)
     xhr.onreadystatechange = function() {
       if (this.readyState === 4) {
-        if (this.status === 200) {
+        if (this.status === 200 || this.status === 304) {
           resolve(this.response)
         } else {
           reject(new Error(this.statusText))
@@ -3022,7 +3137,11 @@ function ajax(url, method, async) {
   })
 }
 
-ajax('http://www.baidu.com', 'GET', true).then(res => {
+// test
+const url = 'http://www.baidu.com'
+const method = 'GET'
+const isAsync = true
+ajax(url, method, isAsync).then(res => {
   console.log(res)
 })
 ```
@@ -3045,6 +3164,7 @@ Array.prototype.myMap = function(fn) {
     return rst
 }
 
+// test
 const arr = [1, 2, 3]
 const rst = arr.myMap(item => item + 3)
 console.log(rst)
@@ -3064,6 +3184,7 @@ Array.prototype.myFilter = function(fn) {
     return rst
 }
 
+// test
 const arr = [2, -1, 0, 3, -2]
 const rst = arr.myFilter(item => item <= 0)
 console.log(rst)
@@ -3090,6 +3211,7 @@ Array.prototype.myReduce = function(fn, initVal) {
     return val
 }
 
+// test
 const arr = [3, 1, 3, 2, 4]
 const rst = arr.reduce((p, c, i, a) => {
   console.log(p, c, i, a)
@@ -3106,9 +3228,12 @@ Array.prototype.myForEach = function(fn) {
     throw new Error('Type Error!')
   }
   for (let i = 0; i < this.length; i++) {
+    // forEach 的回调函数可以有三个参数
     fn(this[i], i, this)
   }
 }
+
+// test
 const arr = [3, 1, 'test', 'fff']
 arr.myForEach((item, index, arr) => console.log(item, index, arr))
 ```
@@ -3117,35 +3242,246 @@ arr.myForEach((item, index, arr) => console.log(item, index, arr))
 
 #### 1. 实现日期格式化函数
 
+```js
+function dateFormat(date, format) {
+  const year = date.getFullYear()
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  format = format.replace(/yyyy/, year)
+  format = format.replace(/MM/, month)
+  format = format.replace(/dd/, day)
+  return format
+}
+
+// test
+const rst1 = dateFormat(new Date('2020-12-01'), 'yyyy/MM/dd') // 2020/12/01
+const rst2 = dateFormat(new Date('2020-04-01'), 'yyyy/MM/dd') // 2020/04/01
+const rst3 = dateFormat(new Date('2020-04-01'), 'yyyy年MM月dd日')
+console.log(rst1)
+console.log(rst2)
+console.log(rst3)
+```
+
+
+
 #### 2. 交换a,b的值，不能用临时变量
+
+```js
+a = 111
+b = 222
+a = a + b
+b = a - b
+a = a - b
+
+// test
+console.log(a, b) // 222 111
+```
+
+
 
 #### 3. 实现数组的乱序输出
 
+```js
+const arr = [1,2,3,4,5]
+for (let i = 0, len = arr.length; i < len; i++) {
+  let randomIndex = Math.round(Math.random() * (arr.length - 1 - i)) + i
+  ;[arr[randomIndex], arr[i]] = [arr[i], arr[randomIndex]]
+}
+
+// test
+console.log(arr)
+```
+
+
+
 #### 4. 实现数组元素求和
+
+```js
+function getSum(arr) {
+  arr = arr.flat(Infinity) // 扁平化
+  return arr.reduce((p, c, i, a) => p += c, 0)
+}
+
+// test
+const arr = [1, 3, 5, [6, [7, [9, 10], 22]]]
+const rst = getSum(arr)
+console.log(rst)
+```
+
+
 
 #### 5. 实现数组的扁平化
 
+```js
+function flatten(arr) {
+  // 1. 使用 some + 扩展运算符
+  while (arr.some(item => Array.isArray(item))) {
+    arr = [].concat(...arr)
+  }
+  return arr
+    
+  // 2. 使用 toString() + split()
+  // return arr.toString().split(',')
+    
+  // 3. 使用 ES6 语法 flat，
+  // return arr.flat(Infinity) // 扁平化无数层
+}
+
+// test
+const arr = [1, 2, [3, 4], [7, [8, [9, [10]]]]]
+const rst = flatten(arr)
+console.log(rst)
+```
+
+
+
 #### 6. 实现数组去重
+
+```js
+function uniqueArray(arr) {
+  // 1. 使用 Set
+  // return Array.from(new Set(arr))
+    
+  // 2. 使用 Map
+  const rst = [], map = new Map()
+  for (let i = 0, len = arr.length; i < len; i++) {
+    if (!map.get(arr[i])) {
+      map.set(arr[i], 1)
+      rst.push(arr[i])
+    }
+  }
+  return rst
+}
+
+// test
+const arr = [1,2,3,4,3,2,4,4,4,4,5]
+const rst = uniqueArray(arr)
+console.log(rst)
+```
+
+
 
 #### 7. 实现数组的flat方法
 
 #### 8. 实现数组的push方法
 
-#### 9. 实现数组的filter方法
+```js
+Array.prototype.myPush = function() {
+  for (let i = 0, len = arguments.length; i < len; i++) {
+    this[this.length] = arguments[i]
+  }
+  return this.length
+}
 
-#### 10. 实现数组的map方法
+// test
+const arr = []
+console.log(arr.myPush(1,2,3))
+console.log(arr.myPush(4))
+console.log(arr)
+```
+
+
 
 #### 11. 实现字符串的repeat方法
 
+```js
+function repeat(data, n) {
+  return new Array(n + 1).join(data)
+}
+
+// test
+const rst = repeat('hello', 10)
+console.log(rst)
+```
+
+
+
 #### 12. 实现字符串翻转
 
+```js
+String.prototype.myReverse = function(str) {
+  // 1. 使用 reverse
+  // return str.split('').reverse().join('')
+
+  // 2. 双指针 + 交换
+  const arr = str.split('')
+  let left = 0, right = str.length - 1
+  while (left < right) {
+    ;[arr[left], arr[right]] = [arr[right], arr[left]]
+    left++
+    right--
+  }
+  return arr.join('')
+}
+
+// test
+const obj = new String()
+const rst = obj.myReverse('Hello World!')
+console.log(rst)
+```
+
+
+
 #### 13. 将数字每千分位用逗号隔开
+
+```js
+function format(n) {
+  let num = n.toString()
+  let decimals = '', integer = num
+  // 提取整数位、小数位
+  if (num.indexOf('.') !== -1) {
+    ;[integer, decimals] = num.split('.')
+  }
+
+  let len = integer.length
+  if (len <= 3) return num
+  let remainder = len % 3, temp = ''
+  decimals ? temp = '.' + decimals : temp
+  if (remainder === 0) {
+    return integer.match(/\d{3}/g).join(',') + temp
+  } else {
+    return integer.slice(0, remainder) + ',' + integer.slice(remainder).match(/\d{3}/g).join(',') + temp
+  }
+}
+
+// test
+console.log(format(12))
+console.log(format(12345))
+console.log(format(12.1234))
+console.log(format(1232.123))
+```
+
+
 
 #### 14. 实现非负大整数相加
 
 #### 15. 实现 add(1)(2)(3)3
 
 #### 16. 实现类数组转化为数组
+
+#### 实现一个 normalize 函数
+
+```js
+function normalize(data) {
+    const rst = {}
+    // 分割 [ 或 ]
+    data.split(/[\[\]]/).filter(Boolean).reduce((p, c, i, a) => {
+        p.value = c
+        if (i !== a.length - 1) {
+            p.children = {}
+            return p.children
+        }
+    }, rst)
+    return rst
+}
+
+data = "[abc[bcd[def]]]"
+
+const rst = normalize(data)
+console.log(rst)
+```
+
+
 
 ### 场景应用
 
@@ -3183,7 +3519,71 @@ arr.myForEach((item, index, arr) => console.log(item, index, arr))
 
 #### 1. 浅拷贝
 
+```js
+function shallowCopy(obj) {
+    // 如果不是object，直接返回原值
+    if (!obj || typeof obj !== 'object') {
+        return obj
+    }
+    // 判断是否是数组还是对象
+    const newObj = Array.isArray(obj) ? [] : {}
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            newObj[key] = obj[key]
+        }
+    }
+    return newObj
+}
+
+// test
+const obj = {
+    name: 'Tom',
+    info: {
+        gender: 'male',
+        age: 18
+    }
+}
+
+const newObj = shallowCopy(obj)
+console.log(newObj)
+```
+
+
+
 #### 2. 深拷贝
+
+```js
+function deepCopy(obj) {
+    // 如果不是object，直接返回原值
+    if (!obj || typeof obj !== 'object') {
+        return obj
+    }
+    // 判断是否是数组还是对象
+    const newObj = Array.isArray(obj) ? [] : {}
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key)) {
+            // 递归实现对象类型深拷贝
+            newObj[key] = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key]
+        }
+    }
+    return newObj
+}
+
+// test
+const obj = {
+    name: 'Tom',
+    info: {
+        gender: 'male',
+        age: 18
+    }
+}
+
+const newObj = deepCopy(obj)
+obj.info.gender = 'fdsfsd'
+console.log(newObj)
+```
+
+
 
 #### 3. 解决递归爆栈
 
