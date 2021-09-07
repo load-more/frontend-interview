@@ -114,3 +114,9 @@
 
 冲刺057：旋转图像（https://leetcode-cn.com/problems/rotate-image/）
 
+冲刺058：N 皇后（https://leetcode-cn.com/problems/n-queens/）
+
+冲刺059：不同路径（https://leetcode-cn.com/problems/unique-paths/）
+
+冲刺060：用两个栈实现队列（https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/）
+
