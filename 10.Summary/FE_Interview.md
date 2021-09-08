@@ -1195,6 +1195,64 @@ CSS transform 创建了一个可以直接被 GPU 转换的合成层（composite 
 
 
 
+#### CSS样式百分比单位相对关系
+
+相对于父级宽度的：
+
+`max-width`、`min-width`、`width`、`left`、`right`、`text-indent`、`padding`、`margin`、`grid-template-columns`、`grid-auto-columns`、`column-gap` 等；
+
+相对于父级高度的：
+
+`max-height`、`min-height`、`height`、`top`、`bottom`、`grid-template-rows`、`grid-auto-rows`、`row-gap` 等；
+
+相对于主轴长度的：
+
+`flex-basis` 等；
+
+相对于继承字号的：
+
+`font-size` 等；
+
+相对于自身字号的：
+
+`line-height` 等；
+
+相对于自身宽高的：
+
+`border-radius`、`background-size`、`border-image-width`、`transform: translate()`、`transform-origin`、`zoom`、`clip-path` 等；
+
+相对于行高的：
+
+`vertical-align` 等；
+
+特殊算法的：
+
+`background-position` （方向长度 / 该方向除背景图之外部分总长度）、`border-image-slice` （相对于图片尺寸）、`filter` 系列函数等；
+
+如果自身设置 `position: absolute`，“父级”指：[Boring：破坏文档流的div高度设为百分比是相对谁而言的？](https://www.zhihu.com/question/35707704/answer/64079391)；
+
+如果 `position: fixed`，“父级”指视口（父级不存在 `transform` 为非 `none` 值的情况下）。
+
+
+
+#### flex: 1
+
+`flex` 是 `flex-grow` 、`flex-shrink` 、 `flex-basis` 这三个属性的简写。
+
+- flex-grow 定义了项目的放大比例，默认值为 0，表示即使存在剩余空间，也不放大；
+- flex-shrink 定义了项目的缩小比例，默认值为 1，表示如果空间不足，就会缩小；
+- flex-basis 定义了分配空间之前，项目在主轴占据的空间，默认值为 auto，表示项目原本大小。
+
+flex 简写属性：
+
+- `flex 为默认值`：0 1 auto （不放大会缩小）
+- `flex 为none`：0 0 auto （不放大也不缩小）
+- `flex 为auto`：1 1 auto（放大且缩小）
+- `flex 为非负整数n`：n 1 0%
+- `flex 为两个非负整数n1、n2`：n1 n2 0%
+- `flex 为一个长度或百分比L`：1 1 L
+- `flex 为一个非负整数n和一个长度或百分比L`：n 1 L
+
 
 
 
@@ -1507,6 +1565,37 @@ CSS transform 创建了一个可以直接被 GPU 转换的合成层（composite 
 #### 6. 如何根据设计稿进行移动端适配？
 
 #### 7. 对Flex布局的理解及其使用场景
+
+#### Grid布局
+
+> https://www.ruanyifeng.com/blog/2019/03/grid-layout-tutorial.html
+
+Grid 布局和 Flex 布局类似，也是拥有两类属性：`容器属性` 和 `项目属性`。
+
+容器属性：
+
+- grid-template-rows：定义每一行的行高，单位可以是px、%、fr；
+- grid-template-columns：定义每一列的列宽；（有这两个属性，可以非常方便的实现两栏布局或者12栏布局）
+- grid-row-gap：定义行间距；
+- grid-column-gap：定义列间距；
+- grid-gap：上述两个属性的简写；
+- align-items：定义单元格内容的垂直位置；
+- justify-items：定义单元格内容的水平位置；
+- place-items：上述两个属性的简写；
+- align-content：定义整个内容区在容器内的垂直位置；
+- justify-content：定义整个内容区在容器内的水平位置；
+- place-content：上述两个属性的简写；
+
+项目属性：
+
+- grid-column-start：定义项目左边框的位置；
+- grid-column-end：定义项目右边框的位置；
+- grid-column：上述两个属性的简写；
+- grid-row-start：定义项目上边框的位置；
+- grid-row-end：定义项目下边框的位置；
+- grid-row：上述两个属性的简写。
+
+
 
 ### 定位与浮动
 
