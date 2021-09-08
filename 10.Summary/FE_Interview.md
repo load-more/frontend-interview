@@ -647,23 +647,93 @@ CDN 全称为内容分发网络，简单来说，它的作用就是利用距离�
 #### 4. 懒加载的实现
 
 ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  body, html {
+    width: 100%;
+    height: 100%;
+  }
+  img {
+    border: 1px solid red;
+    width: 400px;
+    height: 400px;
+  }
+  .container {
+    position: relative;
+  }
+</style>
 <body>
+  <div class="container">
     <div>
-        <img src="loading.gif" data-src="image1.png" />
-        <img src="loading.gif" data-src="image2.png" />
-        <img src="loading.gif" data-src="image3.png" />
+      <img src="EventLoop2.png" data-src="https://gitee.com/gainmore/imglib/raw/master/img/20210819153157.png" alt="">
     </div>
-</body>
-<script>
-	let imgs = document.querySelectorAll('img')
-    let scrollTop = document.documentElement.scrollTop
-    let innerHeight = window.innerHeight
-    for (let i = 0; i < imgs.length; i++) {
-		if (imgs[i].offsetTop < scrollTop + innerHeight) {
-            imgs[i].src = imgs[i].getAttribute('data-src')
+    <div>
+      <img src="EventLoop2.png" data-src="https://gitee.com/gainmore/imglib/raw/master/img/20210904230848.png" alt="">
+    </div>
+    <div>
+      <img src="EventLoop2.png" data-src="https://gitee.com/gainmore/imglib/raw/master/img/20210904104121.png" alt="">
+    </div>
+    <div>
+      <img src="EventLoop2.png" data-src="https://gitee.com/gainmore/imglib/raw/master/img/20210904104045.png" alt="">
+    </div>
+    <div>
+      <img src="EventLoop2.png" data-src="https://gitee.com/gainmore/imglib/raw/master/img/20210902093445.png" alt="">
+    </div>
+  </div>
+  <script defer>
+    const container = document.getElementsByClassName('container')[0]
+    const imgs = document.getElementsByTagName('img')
+    
+    const load = lazyLoad()
+    // 首屏渲染
+    load()
+
+    function lazyLoad() {
+      var count = 0
+      return function() {
+        // 布局视口高度（使用视觉视口高度也一样）
+        // 注意，获取绑定在非行内样式的高度时，使用 .style.height 获取不到高度，
+        // 需要使用 .offsetHeight
+        const height = document.documentElement.clientHeight
+        const scrollTop = document.documentElement.scrollTop
+        for (let i = count, len = imgs.length; i < len; i++) {
+          // `注意，必须给 img 设置高度，否则 offsetTop 会不正确`
+          if (imgs[i].offsetTop < scrollTop + height) {
+            if (imgs[i].getAttribute('src') === 'EventLoop2.png') {
+              // 使用 data-src 的图片替换 src 中的图片
+              imgs[i].src = imgs[i].getAttribute('data-src')
+            }
+            // 加载完一张后 count + 1，之后不会重新加载
+            count++
+          }
         }
+      }
     }
-</script>
+
+    // 节流，一段时间内只触发一次事件
+    function throttle(fn, wait) {
+      let prev = Date.now()
+      return function() {
+        let self = this, args = arguments
+        let cur = Date.now()
+        if (cur - prev >= wait) {
+          prev = Date.now()
+          fn.apply(self, args)
+        }
+      }
+    }
+
+    window.addEventListener('scroll', throttle(load, 1000))
+  </script>
+</body>
+</html>
 ```
 
 #### 5. 懒加载与预加载的区别
@@ -1006,6 +1076,15 @@ head 标签用来定义文档的头部，它是所有头部元素的容器。
 #### 7. transition和animation的区别
 
 - transition 是过渡属性，需要通过事件触发才能执行动画，而且需要设置开始关键帧和结束关键帧；
+
+  ```js
+  // transition 的四个属性：
+  transition-property: 过渡属性(默认值为all)
+  transition-duration: 过渡持续时间(默认值为0s)
+  transiton-timing-function: 过渡函数(默认值为ease函数)
+  transition-delay: 过渡延迟时间(默认值为0s)
+  ```
+
 - animation 是动画属性，不需要通过事件触发，可以自动执行，也可以循环执行，可以通过 @keyframe 设置多个关键帧。
 
 #### 8. display:none与visibility:hidden的区别
@@ -1113,6 +1192,8 @@ window.requestAnimationFrame(callback)，需要传入一个回调函数，该回
 当浏览器收到一个 HTML 后，会进行解析并构建 DOM 树。随后，浏览器可以根据 DOM 树和 CSS 构建出渲染树，渲染树是由页面上**需要渲染的元素**（像 `head` 标签以及 `display: none` 的元素则不渲染）组成的。每个渲染元素都会被分配给一个图形层，每个图形层则会被作为一个纹理（texture）提交给 GPU，GPU会把多个图像合成到屏幕上。而这里的秘密在于，图形层有可能会在没有重绘的情况下直接在 GPU 中转变，就比如 3D 图像。这个转变是由一个独立的合成器（Compositor）流程完成的，你可以阅读 [the composition in Chrome here](https://link.segmentfault.com/?url=https%3A%2F%2Fwww.chromium.org%2Fdevelopers%2Fdesign-documents%2Fgpu-accelerated-compositing-in-chrome) 了解更多。
 
 CSS transform 创建了一个可以直接被 GPU 转换的合成层（composite layer），在 Chrome's DevTools 中可以通过勾选「Show layer borders」选项查看合成层，每个合成层周围都会有个橙色的边框。
+
+
 
 
 
@@ -2921,7 +3002,93 @@ class MyPromise {
 
 #### 6. 手写 Promise.all
 
+> 应用场景：发送 a、b、c 三个请求，希望按顺序返回响应结果，可以使用 `Promise.all()`
+
+```js
+function promiseAll(promises) {
+  if (!Array.isArray(promises)) {
+    throw new Error('Type Error!')
+  }
+  return new Promise((resolve, reject) => {
+    // 计数，结果
+    let count = 0, rst = []
+    promises.forEach((promise, index) => {
+      promise.then(res => {
+        rst[index] = res
+        count++
+        count === promises.length && resolve(rst)
+      }, err => {
+        reject(err)
+      })
+    })
+  })
+}
+
+// test
+let p1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('Hello')
+  }, 1000)
+})
+let p2 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('World')
+  }, 2000)
+})
+let p3 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('!!!')
+  }, 4000)
+})
+promiseAll(p1, p2, p3).then(res => {
+  console.log(res)
+})
+```
+
+
+
 #### 7. 手写 Promise.race
+
+> 应用场景：给某个请求设置一个超时时间，超时后执行相应操作，可以使用 `Promise.race()`
+
+```js
+function promiseRace(promises) {
+  if (!Array.isArray(promises)) {
+    throw new Error('Type Error!')
+  }
+  return new Promise((resolve, reject) => {
+    promises.forEach(promise => {
+      promise.then(res => {
+        resolve(res)
+      }, err => {
+        reject(err)
+      })
+    })
+  })
+}
+
+// test
+let p1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('Hello')
+  }, 1000)
+})
+let p2 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('World')
+  }, 2000)
+})
+let p3 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('!!!')
+  }, 4000)
+})
+promiseRace([p1, p2, p3]).then(res => {
+  console.log(res)
+})
+```
+
+
 
 #### 8. debounce
 
@@ -3553,20 +3720,26 @@ console.log(newObj)
 #### 2. 深拷贝
 
 ```js
-function deepCopy(obj) {
-    // 如果不是object，直接返回原值
-    if (!obj || typeof obj !== 'object') {
-        return obj
+function deepClone(obj, map = new WeakMap()) {
+  if (!obj || typeof obj !== 'object') {
+    return obj
+  }
+  const newObj = Array.isArray(obj) ? [] : {}
+
+  // 解决循环引用
+  if (map.has(obj)) {
+    return map.get(obj)
+  } else {
+    map.set(obj, newObj)
+  }
+
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      newObj[key] = typeof obj[key] === 'object' ? deepClone(obj[key], map) : obj[key]
     }
-    // 判断是否是数组还是对象
-    const newObj = Array.isArray(obj) ? [] : {}
-    for (let key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            // 递归实现对象类型深拷贝
-            newObj[key] = typeof obj[key] === 'object' ? deepCopy(obj[key]) : obj[key]
-        }
-    }
-    return newObj
+  }
+
+  return newObj
 }
 
 // test
@@ -3578,7 +3751,7 @@ const obj = {
     }
 }
 
-const newObj = deepCopy(obj)
+const newObj = deepClone(obj)
 obj.info.gender = 'fdsfsd'
 console.log(newObj)
 ```
