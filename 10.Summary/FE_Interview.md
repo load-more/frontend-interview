@@ -4097,6 +4097,58 @@ console.log(newObj)
 
 
 
+## 算法题
+
+### 在一个字符串数组中有红、黄、蓝三种颜色的球，请为该数组排序。
+
+> 例如：红蓝蓝黄红黄蓝红红黄红 -> 黄黄黄红红红红红蓝蓝蓝
+
+```js
+function sortBalls(str) {
+  let arr = str.split('')
+
+  arr.sort((a, b) => {
+    // 数值越大，对应元素排列越靠右
+    return getNumByType(a) - getNumByType(b)
+  })
+
+  return arr.join('')
+    
+  function getNumByType(type) {
+    switch (type) {
+      case '黄':
+        return 1;
+      case '红':
+        return 2;
+      default:
+        return 3;
+    }
+  }
+}
+
+sortBalls('红蓝蓝黄红黄蓝红红黄红'); // 输出：'黄黄黄红红红红红蓝蓝蓝'
+```
+
+### 一个数的二进制数有多少1
+
+> 15 - > 4，-15 -> 29
+
+```js
+function transform(n) {
+    let rst = 0
+    while (n) {
+        n &= (n - 1)
+        rst++
+    }
+    return rst
+}
+
+const rst = transform(-15)
+console.log(rst) // 29
+```
+
+
+
 
 ## 智力题
 
