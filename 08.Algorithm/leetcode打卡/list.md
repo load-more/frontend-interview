@@ -125,3 +125,10 @@
 冲刺062：编辑距离（https://leetcode-cn.com/problems/edit-distance/）
 
 冲刺063：子集（https://leetcode-cn.com/problems/subsets/）
+
+冲刺064：单词搜索（https://leetcode-cn.com/problems/word-search/）
+
+冲刺065：删除排序链表中的重复元素（https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list/）
+
+冲刺066：删除排序链表中的重复元素 II（https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list-ii/）
+
