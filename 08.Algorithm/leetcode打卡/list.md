@@ -144,3 +144,9 @@
 
 冲刺072：单词拆分（https://leetcode-cn.com/problems/word-break/）
 
+冲刺073：二叉树的前序遍历（https://leetcode-cn.com/problems/binary-tree-preorder-traversal/）
+
+冲刺074：排序链表（https://leetcode-cn.com/problems/sort-list/）
+
+冲刺075：翻转字符串里的单词（https://leetcode-cn.com/problems/reverse-words-in-a-string/）
+
