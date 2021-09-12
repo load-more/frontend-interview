@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button class="btn">click</button>
+  <script src="./myAxios.js"></script>
+  <script>
+    axios.interceptors.request.use(config => {
+      // 发送请求之前的操作
+      config.message = '请求拦截...'
+      console.log('请求被拦截！', config)
+      return config
+    }, error => {
+      // 请求错误的操作
+      return Promise.reject(error)
+    })
+
+    axios.interceptors.response.use(response => {
+      // 收到响应的操作
+      response.message = '响应拦截...'
+      console.log('响应被拦截！', response)
+      return response
+    }, error => {
+      // 响应错误的操作
+      return Promise.reject(error)
+    })
+
+    document.querySelector('.btn').onclick = function() {
+      axios.get('http://localhost:8000/getTest')
+      .then(res => {
+        console.log(res)
+      })
+    }
+  </script>
+</body>
+</html>
