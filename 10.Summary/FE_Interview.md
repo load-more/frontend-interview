@@ -1841,9 +1841,90 @@ BFC 块级格式上下文。
 
 #### 6. 如何解决 1px 问题？
 
-1. 利用属性选择器，根据不同的设备像素比设置 border 的粗细；
-2. 伪元素先放大后缩小；
-3. 利用 meta viewport 缩放。
+> https://juejin.cn/post/6844903877947424782
+>
+> https://blog.csdn.net/u010059669/article/details/88953620
+>
+> https://juejin.cn/post/6994196887402184734
+
+产生原因：
+
+**设计图一般是二倍图或三倍图，在多倍的设计图中设计了1px的边框，在手机上缩小呈现时，1px的边框就会缩小，由于css最低只支持显示1px大小，所以边框依然会是1px。因此之所以边框较粗，实际上只是设计图整体缩小了，而1px的边框没有跟着缩小导致的。（ps：ios较新版已支持0.5px，这里暂且忽略）**
+
+1. 伪元素 + scale
+
+   - 1 条 border
+
+     ```css
+     .setOneBorder {
+         width: 200px;
+         height: 200px;
+         position: relative;
+         border: none; /* 隐藏父元素的边框 */
+     }
+     .setOneBorder::after{
+         content: '';
+         position: absolute; /* 伪元素设置绝对定位 */
+         top: 0; /* 伪元素和父元素左上角对齐 */
+         left: 0;
+         background-color: green; /* 设置边框颜色 */
+         display: block; /* 块元素独占一行 */
+         width: 100%; /* 设置边框宽度 */
+         height: 1px; /* 设置边框高度 */
+         transform: scale(1, 0.5); /* 垂直方向缩小一半 */
+     }
+     ```
+
+   - 4 条 border
+
+     ```css
+     .setBorderAll {
+         width: 200px;
+         height: 200px;
+         position: relative;
+         border: none; /* 隐藏父元素的边框 */
+     }
+     .setBorderAll::after{
+         content: '';
+         position: absolute; /* 伪元素设置绝对定位 */
+         top: 0; /* 伪元素和父元素左上角对齐 */
+         left: 0;
+         border: 1px dashed green; /* 重新设置边框 */
+         box-sizing: border-box;
+         width: 200%; /* 将伪元素放大两倍 */
+         height: 200%;
+         transform: scale(0.5); /* 将伪元素缩小回原来的大小 */
+         transform-origin: left top; /* 以左上角为中心缩小 */
+     }
+     ```
+
+2. viewport + rem + js
+
+   通过设置缩放，让 `CSS` 像素等于真正的物理像素。
+
+   ```js
+   const scale = 1 / window.devicePixelRatio;
+   const viewport = document.querySelector('meta[name="viewport"]');
+   if (!viewport) {
+       viewport = document.createElement('meta');
+       viewport.setAttribute('name', 'viewport');
+       window.document.head.appendChild(viewport);
+   }
+   
+   viewport.setAttribute('content', 'width=device-width,user-scalable=no,initial-scale=' + scale + ',maximum-scale=' + scale + ',minimum-scale=' + scale);
+   
+   // 设置根字体大小
+   var docEl = document.documentElement; 
+   var fontsize = 10 * (docEl.clientWidth / 320) + 'px'; 
+   docEl.style.fontSize = fontsize;
+   
+   // 在CSS中用rem单位就行了
+   
+   ```
+
+3. `box-shadow` 模拟边框
+
+4. `svg` 实现
 
 ## Javascript
 
@@ -3962,6 +4043,19 @@ console.log(newObj)
 ## 项目
 
 ### 移动端适配
+
+### 浏览器兼容问题
+
+> https://juejin.cn/post/6972937716660961317
+>
+> https://juejin.cn/post/6844903493161975822
+
+兼容问题可以分成 `html`、`css`、`javascript` 三个方面，其中 `css` 兼容问题最多，而且大部分针对 `ie` 浏览器。
+
+1. 不同浏览器的默认样式存在差异，可以使用 `Normalize.css` 抹平这些差异。当然，你也可以定制属于自己业务的 `reset.css`。
+2. 不同浏览器对 CSS 样式兼容性不同，可以使用 `postcss` 这个插件给样式添加浏览器厂商前缀。
+3. 使用 `html5shiv.js` 解决 `ie9` 以下浏览器对 `html5` 新增标签不识别的问题。
+4. 使用 `respond.js` 解决 `ie9` 以下浏览器不支持 `CSS3 Media Query` 的问题。
 
 ### 前端性能优化
 
