@@ -150,3 +150,9 @@
 
 冲刺075：翻转字符串里的单词（https://leetcode-cn.com/problems/reverse-words-in-a-string/）
 
+冲刺076：寻找峰值（https://leetcode-cn.com/problems/find-peak-element/）
+
+冲刺077：比较版本号（https://leetcode-cn.com/problems/compare-version-numbers/）
+
+冲刺078：多数元素（https://leetcode-cn.com/problems/majority-element/）
+
