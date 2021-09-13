@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <ul>
+    <li><a href="/home">首页</a></li>
+    <li><a href="/profile">我的</a></li>
+  </ul>
+  <div id="router-view"></div>
+  <script>
+    let routerView = document.getElementById('router-view')
+
+    window.addEventListener('DOMContentLoaded', () => {
+      routerView.innerText = window.location.pathname
+      let list = document.querySelectorAll('a[href]')
+      list.forEach(el => {
+        el.addEventListener('click', (e) => {
+          e.preventDefault() // 阻止默认事件（防止点击 a 标签后自动跳转）
+          window.history.pushState(null, '', el.getAttribute('href'))
+          routerView.innerText = window.location.pathname
+        })
+      })
+    })
+
+    window.addEventListener('popstate', () => {
+      console.log('popstate')
+    })
+  </script>
+</body>
+</html>
