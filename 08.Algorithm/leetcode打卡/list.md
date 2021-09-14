@@ -156,3 +156,9 @@
 
 冲刺078：多数元素（https://leetcode-cn.com/problems/majority-element/）
 
+冲刺079：打家劫舍（https://leetcode-cn.com/problems/house-robber/）
+
+冲刺080：长度最小的子数组（https://leetcode-cn.com/problems/minimum-size-subarray-sum/）
+
+冲刺081：最大正方形（https://leetcode-cn.com/problems/maximal-square/）
+
