@@ -168,3 +168,9 @@
 
 冲刺084：二叉搜索树中第K小的元素（https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/）
 
+冲刺085：回文链表（https://leetcode-cn.com/problems/palindrome-linked-list/）
+
+冲刺086：滑动窗口最大值（https://leetcode-cn.com/problems/sliding-window-maximum/）
+
+冲刺087：搜索二维矩阵 II（https://leetcode-cn.com/problems/search-a-2d-matrix-ii/）
+
