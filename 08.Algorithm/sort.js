@@ -89,7 +89,7 @@ function mergeSort(arr) {
 }
 
 // 原地排序，不占用额外空间
-function quickSort(arr, left, right) {
+function quickSort(arr, left = 0, right = arr.length - 1) {
   // 分区函数，将小于基准的数放到基准左边，大于等于基准的数放到右边，并返回基准的索引
   function partition(arr, left, right) {
     let pivot = left // 去第一个元素为基准
@@ -103,15 +103,12 @@ function quickSort(arr, left, right) {
     [arr[pivot], arr[index - 1]] = [arr[index - 1], arr[pivot]]
     return index - 1 // index-1即为基准的位置
   }
-  let len = arr.length, pivotIndex
-  left = typeof left === 'number' ? left : 0
-  right = typeof right === 'number' ? right : len - 1
   if (left < right) {
-    pivotIndex = partition(arr, left, right)
+    let pivotIndex = partition(arr, left, right)
     quickSort(arr, left, pivotIndex - 1)
     quickSort(arr, pivotIndex + 1, right)
   }
-  return arr
+  // 不需要返回值
 }
 
 
@@ -127,7 +124,8 @@ function quickSort(arr, left, right) {
 // console.timeEnd('mergeSort');
 
 console.time('quickSort')
-const quickSortRst = quickSort(arr)
+quickSort(arr)
+console.log(arr)
 console.timeEnd('quickSort')
 
 
