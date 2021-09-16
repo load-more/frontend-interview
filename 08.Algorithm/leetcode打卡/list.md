@@ -162,3 +162,9 @@
 
 冲刺081：最大正方形（https://leetcode-cn.com/problems/maximal-square/）
 
+冲刺082：基本计算器（https://leetcode-cn.com/problems/basic-calculator/）
+
+冲刺083：翻转二叉树（https://leetcode-cn.com/problems/invert-binary-tree/）
+
+冲刺084：二叉搜索树中第K小的元素（https://leetcode-cn.com/problems/kth-smallest-element-in-a-bst/）
+
