@@ -174,3 +174,9 @@
 
 冲刺087：搜索二维矩阵 II（https://leetcode-cn.com/problems/search-a-2d-matrix-ii/）
 
+冲刺088：丑数 II（https://leetcode-cn.com/problems/ugly-number-ii/）
+
+冲刺089：零钱兑换（https://leetcode-cn.com/problems/coin-change/）
+
+冲刺090：字符串解码（https://leetcode-cn.com/problems/decode-string/）
+
