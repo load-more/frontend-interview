@@ -180,3 +180,9 @@
 
 冲刺090：字符串解码（https://leetcode-cn.com/problems/decode-string/）
 
+冲刺091：用 Rand7() 实现 Rand10()（https://leetcode-cn.com/problems/implement-rand10-using-rand7/）
+
+冲刺092：零钱兑换 II（https://leetcode-cn.com/problems/coin-change-2/）
+
+冲刺093：二叉树的直径（https://leetcode-cn.com/problems/diameter-of-binary-tree/）
+
