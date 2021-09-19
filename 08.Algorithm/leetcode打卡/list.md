@@ -186,3 +186,8 @@
 
 冲刺093：二叉树的直径（https://leetcode-cn.com/problems/diameter-of-binary-tree/）
 
+冲刺094：最大交换（https://leetcode-cn.com/problems/maximum-swap/）
+
+冲刺095：岛屿的最大面积（https://leetcode-cn.com/problems/max-area-of-island/）
+
+冲刺096：二分查找（https://leetcode-cn.com/problems/binary-search/）
