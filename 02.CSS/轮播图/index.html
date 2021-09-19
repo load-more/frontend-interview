@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .container {
+      margin: 100px auto;
+      width: 400px;
+      height: 300px;
+      overflow: hidden;
+      position: relative;
+    }
+    .img-box {
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: translateX(-400px);
+      display: flex;
+    }
+    img {
+      width: 400px;
+    }
+
+    /* 圆点 */
+    .dots {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .dots li {
+      list-style: none;
+      /* 转换为行内块元素 -- 一行显示 */
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      background-color: #fff;
+      margin-right: 5px;
+      border-radius: 50%;
+      transition: all 0.5s;
+      cursor: pointer;
+    }
+    .dots .active {
+      background-color: gray;
+    }
+
+    /* 箭头 */
+    .left-arrow, .right-arrow {
+      color: #fff;
+      font-size: 30px;
+      position: absolute;
+      top: 130px;
+      cursor: pointer;
+    }
+    .left-arrow {
+      left: 0;
+    }
+    .right-arrow {
+      right: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 图片 -->
+    <ul class="img-box">
+      <li><img src="./img4.jpg" alt=""></li>
+      <li><img src="./img1.jpg" alt=""></li>
+      <li><img src="./img2.jpg" alt=""></li>
+      <li><img src="./img3.jpg" alt=""></li>
+      <li><img src="./img4.jpg" alt=""></li>
+      <li><img src="./img1.jpg" alt=""></li>
+    </ul>
+    <!-- 圆点 -->
+    <ul class="dots">
+      <li data-index="0"></li>
+      <li data-index="1"></li>
+      <li data-index="2"></li>
+      <li data-index="3"></li>
+    </ul>
+    <!-- 箭头 -->
+    <div class="left-arrow">&lt;</div>
+    <div class="right-arrow">&gt;</div>
+  </div>
+  <script src="./carousel.js"></script>
+</body>
+</html>
