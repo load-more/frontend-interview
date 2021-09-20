@@ -2944,9 +2944,138 @@ nextTick() 返回的是一个 Promise 对象。
 2. computed 里面的 Watcher；
 3. 用户自定义的 Watcher，即 watch 属性，可以定义 deep 和 immediate 属性。
 
+#### Vue封装组件
+
+Vue 实现组件的封装主要是靠三个属性：prop、event、slot。
+
+prop 用于父组件向子组件传递参数，event 用于子组件向父组件传递参数，slot 用于父组件向子组件传递内容节点。
+
+比如二次封装 Echarts：
+
+```vue
+// 封装：
+<template>
+  <div :ref="id" />
+</template>
+
+<script>
+import echarts from 'echarts'
+// 监听元素大小（尺寸）变化
+import { addListener, removeListener } from 'resize-detector'
+// 防抖
+import debounce from 'lodash/debounce'
+export default {
+  props: {
+    option: {
+      type: Object,
+      default: () => {}
+    },
+    id: {
+      type: String,
+      default: 'chartDom'
+    }
+  },
+  data() {
+    return {
+    }
+  },
+  watch: {
+    option: {
+      handler(val) {
+        this.chart.setOption(this.option)
+      },
+      deep: true
+    }
+  },
+  created() {
+    // 防抖，性能优化
+    this.resizefn = debounce(this.resize, 300)
+  },
+  mounted() {
+    this.renderCharts()
+    // 监听元素尺寸变化
+    addListener(this.$refs[this.id], this.resizefn)
+  },
+  beforeDestroy() {
+    // 移除监听器
+    removeListener(this.$refs[this.id], this.resizefn)
+    // 销毁echarts实例
+    this.chart.dispose()
+    this.chart = null
+  },
+  methods: {
+    resize() {
+      this.chart.resize()
+    },
+    // 初始化
+    renderCharts() {
+      this.chart = echarts.init(this.$refs[this.id])
+      if (this.option) {
+        this.chart.setOption(this.option)
+      }
+      const _this = this
+      // 注册点击事件
+      this.chart.on('click', function(params) {
+        _this.$emit('onClick', params)
+      })
+    }
+  }
+}
+</script>
+
+// 使用：
+<template>
+  <div>
+    <h5 style="text-align:center;">echarts图表的封装</h5>
+    <Charts v-if="chartOption" :option="chartOption" style="height:600px;"></Charts>
+  </div>
+</template>
+<script>
+import Charts from './components/Charts'
+export default {
+  components: {
+    Charts
+  },
+  data() {
+    return {
+      chartOption: null
+    }
+  },
+  created() {
+    this.getChartsData()
+  },
+  methods: {
+    getChartsData() {
+      setTimeout(() => {
+        this.chartOption = {
+          title: {
+            text: '疯狂测试'
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          xAxis: {
+            data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+          },
+          yAxis: {},
+          series: [{
+            name: '销量',
+            type: 'pie',
+            data: [100, 150, 50, 200, 120, 300]
+          }]
+        }
+      }, 1000)
+    }
+  }
+}
+</script>
+```
 
 
 
+
+
+---
 
 ### 生命周期
 
