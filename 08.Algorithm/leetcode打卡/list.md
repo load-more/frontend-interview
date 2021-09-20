@@ -191,3 +191,10 @@
 冲刺095：岛屿的最大面积（https://leetcode-cn.com/problems/max-area-of-island/）
 
 冲刺096：二分查找（https://leetcode-cn.com/problems/binary-search/）
+
+冲刺097：最长重复子数组（https://leetcode-cn.com/problems/maximum-length-of-repeated-subarray/）
+
+冲刺098：排序数组（https://leetcode-cn.com/problems/sort-an-array/）
+
+冲刺099：最长公共子序列（https://leetcode-cn.com/problems/longest-common-subsequence/）
+
