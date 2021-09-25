@@ -52,10 +52,10 @@ Response Header:
 - POST
 - DELETE
 - PUT
-- HEAD
-- OPTIONS
-- CONNECT
-- TRACE
+- HEAD：获取报文首部，与 GET 相比，不返回报文主体部分；
+- OPTIONS：询问支持的请求方法，用来跨域请求；
+- CONNECT：要求在与代理服务器通信时建立隧道，使用隧道进行TCP通信；
+- TRACE：回显服务器收到的请求，主要⽤于测试或诊断。
 
 #### 6. options请求方法及使用场景
 
@@ -67,14 +67,29 @@ Response Header:
 `连资缓浩钦`
 
 - 连接。HTTP1.0默认使用非持久连接，HTTP1.1默认使用持久连接，通过持久连接使得多个HTTP请求复用同一个TCP连接，避免了非持久连接每次都需要建立连接带来的时延。
-- 资源请求。HTTP1.1新增了range请求头，运行请求资源的某个部分，对应的状态码为206（Partical Content），充分利用了带宽。
+- 资源请求。HTTP1.1 新增了 range 请求头，运行请求资源的某个部分，对应的状态码为206（Partical Content），充分利用了带宽。
 - 缓存。HTTP1.0使用请求头中的 If-Modified-Since、Expires 控制缓存，而HTTP1.1新增了许多缓存控制策略，比如 Etag、If-unmodified-Since、If-Match、If-None-Match。
 - Host。HTTP1.1新增了host，指定服务器的域名。
 - 请求方法。HTTP1.1新增了很多请求方法，PUT、HEAD、OPTIONS等。
 
 #### 8. HTTP 1.1和 HTTP 2.0 的区别
 
+`二多数头服`
+
+- 二进制协议。HTTP2.0 是一个彻底的二进制协议，头信息和数据体都采用了二进制；而 HTTP1.1 中的头信息是文本，数据体可以是文本也可以是二进制。
+- 多路复用。HTTP2.0 实现了多路复用，在同一个连接中，浏览器和服务器可以同时发送多个请求或响应，而且不用按照顺序逐个发送，避免了 `对头堵塞` 的问题。
+- 数据流。HTTP2.0 提出了数据流的概念，同一个请求或响应的所有数据包属于同一个数据流，每个数据流有独一无二的 ID，每个数据包发送时必须带上数据流的 ID，用于区分它是属于哪个数据流。
+- 头信息压缩。HTTP2.0 实现了头信息压缩，一方面是采用 gzip 或者 compress 将头信息进行压缩，另一方面，浏览器和服务器同时维护一张头信息表，将所有字段存入到头信息表中，生成对应的索引号，之后只要使用索引号就可以减少头信息的体积。
+- 服务器推送。HTTP2.0 中，服务器可以主动向浏览器推送消息，这里推送的主要是静态资源，和 WebSocket、SSE 等方式推送的即时数据是不同的。
+
 #### 9. HTTP和HTTPS协议的区别
+
+`证明端安`
+
+- HTTPS 需要数字证书，费用较高，而 HTTP 不需要；
+- HTTP 采用的是明文传输，而 HTTPS 利用 TLS 安全层实现了数据的加密传输；
+- HTTP 的默认端口号为 80，HTTPS 的默认端口号为 443；
+- HTTP 连接简单快速，而且无状态，HTTPS 通过 TLS 安全层实现了身份验证、加密传输和完整性校验等功能。
 
 #### 10. GET方法URL长度限制的原因
 
@@ -176,7 +191,29 @@ TLS/SLL 实现其功能主要依靠三类算法：散列函数(hash)、对称加
 
 #### 1. OSI七层模型
 
+- 应用层：为应用程序提供交互服务。如 DNS 协议、HTTP 协议、SMTP 协议、FTP 协议等。
+- 表示层：负责数据格式的转化，如加密解密、压缩解压缩等。
+- 会话层：负责在网络中的两个节点之间建立、维持和终止通信，如服务器验证用户登录就是会话层完成的。
+- 运输层：负责向两台主机进程之间的通信提供数据传输服务。如 TCP 协议、UDP 协议。
+- 网络层：选择合适的路由和交换节点，确保数据及时发送。主要包括 IP 协议。
+- 数据链路层：将网络层传下来的 IP 数据封装成帧，并在相邻的节点链路上传送帧。
+- 物理层：实现相邻节点间比特流的透明传输，尽可能屏蔽传输介质和通信手段的差异。
+
 #### 2. TCP/IP五层协议
+
+---
+
+### ARP协议
+
+ARP 协议解决了同一个局域网下的主机和路由器 IP 地址和 MAC 地址的解析。
+
+- 每台主机都会在自己的 ARP 缓冲区中建立一个 ARP 列表，表示 IP 地址和 MAC 地址的对应关系。
+- 当源主机要发送一个数据包给目标主机时，会首先检查自己的 ARP 列表中是否有目标主机的 IP 地址对应的 MAC 地址，如果有，就直接发送数据包到这个 MAC 地址；如果没有，就会向本地网段发起一个 ARP 请求的广播包，该请求包含源主机的 IP 地址、MAC 地址以及目标主机的 IP 地址。
+- 网络中的主机接收到请求之后，会检查自己的 IP 地址是否和请求中的 IP 地址一致，如果不一致就将请求忽略。如果一致的话，该主机会先将源主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，如果已有值，就会将原来的值覆盖。然后会给源主机发送一个 ARP 响应数据包，告诉源主机自己的 MAC 地址。
+- 源主机收到响应后，就会将目标主机的 IP 地址和 MAC 地址添加到自己的 ARP 列表中，并且开始数据传输。
+- 如果源主机一直没有收到响应，表示 ARP 查询失败。
+
+---
 
 ### TCP和UDP
 
@@ -472,9 +509,9 @@ CSRF 有三种类型：
      - 服务器会根据 origin 的值，确定该 origin 是否在允许的范围内，如果满足条件，就会返回对应的资源并且在响应头中加上一些字段，比如 `Access-Control-Allow-Origin`，这个字段的值就是 origin，如果不满足条件的话，也会正常返回资源，但不会有这个字段；
      - 然后浏览器会收到响应，浏览器就会判断响应头中是否有 `Access-Control-Allow-Origin` 这个字段，如果没有的话，就会报错。
    - 非简单请求：
-     - 非简单请求会在正式通信前进行一次预检请求，请求方法是 OPTIONS，请求头中的字段会有 origin、Access-Control-Request-Methods（表示请求会用到哪些方法）、Access-Control-Request-Headers（表示请求会哪些自定义字段）；
+     - 非简单请求会在正式通信前进行一次预检请求，请求方法是 `OPTIONS`，请求头中的字段会有 `origin`、`Access-Control-Request-Methods`（表示请求会用到哪些方法）、`Access-Control-Request-Headers`（表示请求会哪些自定义字段）；
      - 服务器收到预检请求后，会根据以上三个字段进行判断，然后返回响应（`Access-Control-Allow-Origin`、`Access-Control-Allow-Methods`、`Access-Control-Allow-Headers`）。如果响应头中有 `Access-Control-Allow-Origin` 这个字段，说明通过了预检请求，否则就没有通过预检请求；
-     - 如果通过了预检请求，浏览器就会在每次请求的时候带上 origin，而服务器在响应时也会带上 `Access-Control-Allow-Origin`；
+     - 如果通过了预检请求，浏览器就会在每次请求的时候带上 `origin`，而服务器在响应时也会带上 `Access-Control-Allow-Origin`；
      - 另外，为了减少预检请求的次数，服务器还可以在响应头中添加 `Access-Control-Max-Age`，表示预检请求结果的缓存时间，在有效时间内，再次发送请求就不用进行预检请求了。
 
    另外，跨域请求是默认不带 cookie 的，需要手动配置，需要三步：
@@ -1364,9 +1401,13 @@ flex 简写属性：
 - `flex 为一个长度或百分比L`：1 1 L
 - `flex 为一个非负整数n和一个长度或百分比L`：n 1 L
 
+#### scale()可以为负数吗？什么效果？
 
+可以为负数。
 
+当 scale 为负数时，元素的缩放的比例和正数一样，只是元素会镜像翻转过来。比如 scale(-50%, -50%) 和 scale(50%, 50%) 一样，都是将元素缩小一般，只是元素在水平方向和垂直方向会发生镜像翻转。
 
+---
 
 ### 页面布局
 
@@ -2706,6 +2747,36 @@ Scavenge 算法主要是在进行垃圾回收时，给新生代中的 From 空�
 
 实现无缝轮播的效果需要复制两张图片，如果现在有三张图片需要轮播，一般会在复制第一张图片到这组图片的末尾，然后复制第三张图片到这组图片的开头，这两张图片作为跳板，实现无缝轮播的效果。当用户在图片组的中间位置进行切换时，会结合 transition 属性实现过渡效果，如果切换到边界位置，比如第三张图片切换到末尾的跳板图片，会开启一个定时器，当切换完成后，将 index 值变为 1，并且不设置 transition 属性，表示瞬间切换到第一张图片，由于末尾的跳板图片和第一张图片是相同的，所以用户察觉不到图片的变换，从而实现无缝切换。
 
+### node与js区别
+
+- JavaScript 是一门变成语言，通常运行在浏览器中，而 nodejs 是一个平台，它是 JavaScript 的一种运行环境。
+- JavaScript 由 ECMAScript、BOM 和 DOM 组成，而 nodejs 没有 BOM 和 DOM，它可以分为 ECMAScript（语言基础，如语法、数据类型结构以及一些内置对象）、OS（操作系统）、file（文件系统）、net（网络系统）、database（数据库）。
+
+### 严格模式
+
+严格模式通过在脚本或函数的头部添加 `use strict` 表达式来声明。
+
+作用：
+
+- **消除 Javascript 语法的一些不合理、不严谨之处，减少一些怪异行为**；
+- 消除代码运行的一些不安全之处，保证代码运行的安全；
+- 提高编译器效率，增加运行速度；
+- 为未来新版本的Javascript做好铺垫。
+
+"严格模式"体现了Javascript更合理、更安全、更严谨的发展方向，包括IE 10在内的主流浏览器，都已经支持它，许多大项目已经开始全面拥抱它。
+
+另一方面，同样的代码，在"严格模式"中，可能会有不一样的运行结果；一些在"正常模式"下可以运行的语句，在"严格模式"下将不能运行。掌握这些内容，有助于更细致深入地理解 Javascript ，让你变成一个更好的程序员。
+
+### eval函数
+
+eval 函数的作用就是把一段字符串传递给 JS 解释器，由 Javascript 解释器将这段字符串解释成 Javascript 代码，并且执行它。
+
+为什么不推荐使用 eval？
+
+- eval 不容易调试。用 chromeDev 等调试工具无法打断点调试；
+- 存在安全问题，可能引起XSS攻击，例如 DOM 型 XSS 攻击；
+- 存在性能问题，如果在旧的浏览器中使用了eval，性能会下降10倍。
+
 
 
 ---
@@ -3784,7 +3855,75 @@ ajax(url, method, isAsync).then(res => {
 })
 ```
 
+#### 17. Vue双向绑定
 
+```js
+class Observer {
+    constructor(data) {
+        this.data = data
+        this.observe(this.data)
+    }
+    observe(data) {
+        if (!data || typeof data !== 'object') return
+        Object.keys(data).forEach(key => {
+            this.defineReactive(data, key, data[key])
+        })
+     }
+    defineReactive(data, key, val) {
+        this.observe(data)
+        const dep = new Dep()
+        Object.defineProperty(data, key, {
+            enumerable: true,
+            configurable: true,
+            set(newVal) {
+                if (newVal === val) return
+                val = newVal
+                dep.notify()
+            },
+            get() {
+                Dep.target && dep.addSub(Dep.target)
+                return val
+            }
+        })
+    }
+}
+
+class Dep {
+    constructor() {
+        this.subs = []
+    }
+    addSub(watcher) {
+        this.subs.push(watcher)
+    }
+    notify() {
+	    this.subs.forEach(watcher => {
+            watcher.update()
+        })
+    }
+}
+
+class Watcher {
+    constructor(vm, key, cb) {
+        this.vm = vm
+        this.key = key
+        this.cb = cb
+        
+        Dep.target = this
+        this.update()
+        Dep.target = null
+    }
+    update() {
+        const val = this.key.split('.').reduce((v, k) => v[k], this.vm)
+        this.cb(val)
+    }
+}
+```
+
+
+
+
+
+---
 
 ### 数据处理
 
@@ -4353,6 +4492,15 @@ console.log(newObj)
 
 ### 移动端适配
 
+rem 适配：
+
+- 使用 `amfe-flexible` ，获取到不同设备的布局视口宽度，然后设置 html 的 font-size，通常设置为布局视口的十分之一，这样使得 `1 rem = 1/10 * clientWidth`；
+- 使用 `postcss-pxtorem` 这个插件，将项目中所有单位 px 的属性转换成 rem 单位。
+
+vw 适配：
+
+- 主要用到 `postcss-px-to-viewport` 这个插件，在项目的根目录下创建 `.postcssrc.js` 文件，在文件里添加一些配置即可。主要作用就是根据涉及稿的高度和宽度，将 px 单位转换成 vw 或者 vh 单位。
+
 ### 浏览器兼容问题
 
 > https://juejin.cn/post/6972937716660961317
@@ -4378,7 +4526,7 @@ console.log(newObj)
 
 减少首页请求：
 
-`懒合打按防点缓`
+`懒合打按防点缓渲预`
 
 1. 使用路由懒加载，按需加载路由；
 2. 通过 nginx 服务器（可用来做 CDN，用来处理静态资源）来做资源文件的合并（combo）-- 将多个资源的 CDN 地址合并到一起，同时加载多个 JS 文件或 CSS 文件；
@@ -4387,6 +4535,8 @@ console.log(newObj)
 5. 使用防抖、节流函数减少请求次数；
 6. 给一些按钮组件添加禁用的效果，不让用户频繁点击，减少 HTTP 请求；
 7. 服务器可以给一些频繁访问的资源设置缓存，通常可以使用 expires 或者 cache-control 字段给资源设置一个过期时间，这样在这段时间内，就可以减少HTTP请求；
+8. 使用服务端渲染；
+9. 使用预渲染。
 
 #### 2.减少静态资源的体积
 
@@ -4465,7 +4615,14 @@ console.log(newObj)
 
 #### 性能优化
 
+#### 元素在设置fixed布局抖动
 
+> - https://www.cnblogs.com/qiujianmei/p/7544989.html
+> - https://www.cnblogs.com/Arlar/p/5660368.html
+
+原因：移动端一些浏览器的兼容性不好。
+
+解决办法：将 html、body 元素的 width、height 都设置为 100%。
 
 
 
@@ -4485,7 +4642,7 @@ console.log(newObj)
 
 ### 3.了解哪些前端新技术？
 
-移动端 APP 开发
+**移动端 APP 开发**
 
 - Native APP 开发（原生应用）
 - Hybrid APP 开发（混合应用）
@@ -4500,7 +4657,9 @@ console.log(newObj)
   - 快应用
   - PWA 离线应用
 
-打包工具 Vite、Parcel
+**打包工具 Vite、Parcel**
+
+**桌面应用开发 Electron**
 
 
 
