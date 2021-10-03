@@ -3697,10 +3697,9 @@ console.log(rst)
 
 ```js
 Function.prototype.myCall = function(context, ...args) {
-    let rst = null
     context = context || window
     context.fn = this
-    rst = context.fn(...args)
+    let rst = context.fn(...args)
     delete context.fn
     return rst
 }
@@ -3722,13 +3721,12 @@ console.log(obj)
 
 ```js
 Function.prototype.myApply = function(context, args) {
-    let rst = null
     context = context || window
     context.fn = this
     if (args) {
-        rst = context.fn(...args)
+        let rst = context.fn(...args)
     } else {
-        rst = context.fn()
+        let rst = context.fn()
     }
     delete context.fn
     return rst
@@ -3982,15 +3980,15 @@ Array.prototype.myReduce = function(fn, initVal) {
     if (typeof fn !== 'function') {
         throw new Error('Type Error!')
     }
-    let val, i
+    let val, index
     if (initVal === undefined) {
         val = this[0]
-        i = 1
+        index = 1
     } else {
         val = initVal
-        i = 0
+        index = 0
     }
-    for (i, len = this.length; i < len; i++) {
+    for (let i = i, len = this.length; i < len; i++) {
 		val = fn(val, this[i], i, this)
     }
     return val
