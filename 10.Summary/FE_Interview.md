@@ -3921,6 +3921,86 @@ class Watcher {
 }
 ```
 
+#### 18. EventEmitter
+
+```js
+class EventEmitter {
+  constructor() {
+    this.events = {}
+  }
+  // 绑定事件函数
+  on(name, callback) {
+    // 首先判断这个事件是否存在
+    if (this.events[name]) {
+      // 如果存在的话直接给数组 this.events[name] 尾部添加回调函数
+      this.events[name].push(callback)
+    } else {
+      // 如果不存在则建立
+      this.events[name] = [callback]
+    }
+    return this
+  }
+  // 触发事件
+  emit(name,  ...args)  {
+    if(this.events[name]) {
+      // 遍历数组，并且传值运算
+      this.events[name].forEach(callback => {
+        callback(...args)
+      })
+    }
+    return this
+  }
+  // 停止监听某个事件
+  off(name, callback){
+    if(this.events[name]) {
+      // 使用过滤器 filter，如果 fn 和传入的 callback 相等的时候就删除它
+      this.events[name] = this.events[name].filter(fn => {
+        fn !== callback
+      })
+    }
+    return this
+  }
+  // 单次监听器，只能被触发一次，下次触发就不会响应
+  once(name, callback) {
+    const self = this
+    const onlyOnce = function(...args) {
+      // 执行此回调函数
+      callback(...args)
+      // 执行完毕后关闭回调函数，就达到了一次性触发
+      self.off(name, onlyOnce)
+    }
+    // 绑定 onlyOnce 回调函数
+    this.on(name, onlyOnce)
+    return this
+  }
+}
+
+
+let e = new EventEmitter()
+
+e.on('name', function(name){
+  console.log(`name: ${name}`)
+})
+e.on('gender', function(gender){
+  console.log(`gender: ${gender}`)
+})
+e.once('age', function(age){
+  console.log(`gender: ${age}`)
+})
+
+e.emit('name', 'Tom')
+e.emit('name', 'Joe')
+e.emit('name', 'Amy')
+
+e.emit('gender', 'male')
+e.emit('gender', 'male')
+e.off('gender')
+e.emit('gender', 'female')
+
+e.emit('age', 18)
+e.emit('age', 22)
+```
+
 
 
 
