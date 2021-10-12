@@ -122,7 +122,7 @@
 
 冲刺061：最小路径和（https://leetcode-cn.com/problems/minimum-path-sum/）
 
-冲刺062：编辑距离（https://leetcode-cn.com/problems/edit-distance/）
+冲刺062：编辑距离（https://leetcode-cn.com/problems/edit-distance/）（困难）
 
 冲刺063：子集（https://leetcode-cn.com/problems/subsets/）
 
