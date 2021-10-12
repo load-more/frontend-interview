@@ -921,15 +921,11 @@ function throttle(fn, wait) {
 
 ### 2.模块打包运行原理
 
-1、读取`webpack`的配置参数，从配置文件和 `Shell` 语句中读取与合并参数，得出最终的参数；
-
-2、启动`webpack`，创建`Compiler`对象并开始解析项目；
-
-3、从入口文件（`entry`）开始解析，并且找到其导入的依赖模块，递归遍历分析，形成依赖关系树；
-
-4、对不同文件类型的依赖模块文件使用对应的`Loader`进行编译，最终转为`Javascript`文件；
-
-5、整个过程中`webpack`会通过发布订阅模式，向外抛出一些`hooks`，而`webpack`的插件即可通过监听这些关键的事件节点，执行插件任务进而达到干预输出结果的目的。
+1. 读取`webpack`的配置参数，从配置文件和 `Shell` 语句中读取与合并参数，得出最终的参数；
+2. 启动`webpack`，创建`Compiler`对象并开始解析项目；
+3. 从入口文件（`entry`）开始解析，并且找到其导入的依赖模块，递归遍历分析，形成依赖关系树；
+4. 对不同文件类型的依赖模块文件使用对应的`Loader`进行编译，最终转为`Javascript`文件；
+5. 整个过程中`webpack`会通过发布订阅模式，向外抛出一些`hooks`，而`webpack`的插件即可通过监听这些关键的事件节点，执行插件任务进而达到干预输出结果的目的。
 
 ### 3.sourceMap是什么
 
@@ -3876,7 +3872,7 @@ class Observer {
         })
      }
     defineReactive(data, key, val) {
-        this.observe(data)
+        this.observe(val)
         const dep = new Dep()
         Object.defineProperty(data, key, {
             enumerable: true,
@@ -3924,6 +3920,150 @@ class Watcher {
     }
 }
 ```
+
+
+
+
+
+---
+
+### 排序算法
+
+![](https://gitee.com/gainmore/imglib/raw/master/img/20211009152734.png)
+
+#### 1. 冒泡排序
+
+```js
+function bubbleSort(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+		for (let j = 0; j < arr.length - 1 - i; j++) {
+			if (arr[j] > arr[j + 1]) {
+                [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
+            }
+        }
+    }
+}
+```
+
+- 时间复杂度：
+  - 最好情况：O(n)
+  - 最坏情况：O(n^2)
+  - 平均情况：O(n^2)
+- 空间复杂度：O(1)
+- 稳定
+
+#### 2. 插入排序
+
+```js
+// 算法稳定
+function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+        let prevIndex = i
+        while (prevIndex >= 0 && arr[prevIndex] > arr[prevIndex + 1]) {
+            [arr[prevIndex], arr[prevIndex + 1]] = [arr[prevIndex], arr[prevIndex]]
+            prevIndex--
+        }
+    }
+}
+```
+
+- 时间复杂度：
+  - 最好情况：O(n)
+  - 最坏情况：O(n^2)
+  - 平均情况：O(n^2)
+- 空间复杂度：O(1)
+- 不稳定
+
+#### 3. 选择排序
+
+```js
+// 算法不稳定，因为
+function selectionSort(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        let minIndex = i
+		for (let j = i + 1; j < arr.length; j++) {
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j
+            }
+        }
+        if (minIndex !== i) {
+            [arr[i], arr[minIndex]] = [arr[minIndex], arr[i]]
+        }
+    }
+}
+```
+
+- 时间复杂度：
+  - 最好情况：O(n^2)
+  - 最坏情况：O(n^2)
+  - 平均情况：O(n^2)
+- 空间复杂度：O(1)
+- 不稳定（如[6, 6, 1, 2,1]，在第一轮选择后变为：[1, 6, 6, 2, 1]，两个6之间顺序发生了改变）
+
+#### 4. 归并排序
+
+```js
+function mergeSort(arr) {
+    function merge(left, right) {
+        const rst = []
+        while (left.length && right.length) {
+            if (left[0] <= right[0]) {
+                rst.push(left.shift())
+            } else {
+                rst.push(right.shift())
+            }
+        }
+        while (left.length) {
+            rst.push(left.shift())
+        }
+        while (right.length) {
+            rst.push(right.shift())
+        }
+    }
+    if (arr.length <= 1) return arr
+    let mid = Math.floor(arr.length / 2)
+    let left = arr.slice(0, mid)
+    let right = arr.slice(mid)
+    return merge(mergeSort(left), mergeSort(right))
+}
+```
+
+- 时间复杂度：
+  - 最好情况：O(n log n)
+  - 最坏情况：O(n log n)
+  - 平均情况：O(n log n)
+- 空间复杂度：O(n)
+- 稳定
+
+#### 5. 快速排序
+
+```js
+function quickSort(arr, left = 0, right = arr.length - 1) {
+    function partition(arr, left, right) {
+        let pivot = left, index = pivot + 1
+        for (let i = index; i <= right; i++) {
+            if (arr[i] < arr[pivot]) { // 当判断条件为 < 时稳定，为 <= 时不稳定
+                [arr[i], arr[index]] = [arr[index], arr[i]]
+                index++
+            }
+        }
+        [arr[pivot], arr[index - 1]] = [arr[index - 1], arr[pivot]]
+        return index - 1
+    }
+    if (left < right) {
+        const pivotIndex = partition(arr, left, right)
+        quickSort(arr, left, pivotIndex - 1)
+        quickSort(arr, pivotIndex + 1, right)
+    }
+}
+```
+
+- 时间复杂度：
+  - 最好情况：O(n log n)
+  - 最坏情况：O(n^2)
+  - 平均情况：O(n log n)
+- 空间复杂度：O(log n)
+- 稳定 / 不稳定（当判断条件为 < 时稳定，为 <= 时不稳定）
 
 
 
@@ -4134,6 +4274,8 @@ function uniqueArray(arr) {
     }
   }
   return rst
+    
+  // 3. 使用 indexOf()
 }
 
 // test
@@ -4419,8 +4561,8 @@ console.log(newObj)
 ### 5.Webpack构建流程简单说一下
 
 1. 启动构建，读取并合并配置参数，加载 plugin，实例化 Compiler；
-2. 从 entry 开始，针对每个模块调用调用对应的 loader 去翻译文件的内容，再找到模块依赖的 module，然后递归地进行编译；
-3. 将编译后的 module 组合成 chunk，将 chunk 转换成文件，输出到文件系统中。
+2. 从 entry 开始，针对每个模块调用调用对应的 loader 去翻译文件的内容，再找到模块依赖的 module，然后递归地进行编译，构建依赖关系树；
+3. 将编译后的 module 组合成 chunk，将 chunk 转换成文件，输出 bundle 文件到文件系统中。
 
 ### 6.Webpack 的热更新原理
 
@@ -4432,7 +4574,7 @@ console.log(newObj)
 
 ### 7.如何优化 Webpack 的构建速度？
 
-`高速多缩压D`
+`高速多压缩D`
 
 - 使用`高版本`的 Webpack 和 Node.js；
 - `多进程/多实例构建`：HappyPack(不维护了)、thread-loader；
@@ -4602,6 +4744,22 @@ vw 适配：
 
 上传图片，首先新建一个 FormData() 对象，然后向这个对象中 `append` 一些字段和对应的数据，再调用接口请求将这个 FormData 对象作为请求体的参数传入即可。
 
+#### 兼容问题
+
+HTML：
+
+- html5shiv.js 解决 html5 新标签兼容问题
+
+JavaScript：
+
+- polyfill
+
+CSS：
+
+- normalize.css 或 reset.css 清除默认样式
+- postcss 添加浏览器厂商前缀
+- respond.js 处理媒体查询兼容
+
 #### 登录
 
 > https://www.jianshu.com/p/cab856c32222
@@ -4726,6 +4884,40 @@ function transform(n) {
 
 const rst = transform(-15)
 console.log(rst) // 29
+```
+
+### 数组转换为树形结构
+
+```js
+function transform(arr) {
+  function dfs(arr, id) {
+    const rst = []
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].pid === id) {
+        rst.push(arr[i])
+      }
+    }
+    if (rst.length === 0) return rst
+    for (let i = 0; i < rst.length; i++) {
+      const temp = dfs(arr, rst[i].id)
+      if (temp.length !== 0) {
+        rst[i].subs = temp
+      }
+    }
+    return rst
+  }
+  return dfs(arr)
+}
+
+const locationList = [
+  { id: 0, name: "中国" },
+  { id: 1, pid: 0, name: "北京市" },
+  { id: 2, pid: 1, name: "昌平区" },
+  { id: 3, pid: 1, name: "海淀区" }
+]
+const res = transform(locationList)[0]
+console.log(JSON.stringify(res))
+// {"id":0,"name":"中国","subs":[{"id":1,"pid":0,"name":"北京市","subs":[{"id":2,"pid":1,"name":"昌平区"},{"id":3,"pid":1,"name":"海淀区"}]}]}
 ```
 
 
