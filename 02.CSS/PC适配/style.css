@@ -1,0 +1,25 @@
+/* 大屏幕（大桌面显示器） width > 1200px */
+body {
+  background-color: yellow;
+}
+
+/* 中等屏幕（桌面显示器） 992px - 1200px */
+@media screen and (max-width: 1200px) {
+  body {
+    background-color: #f5c8f5;
+  }
+}
+
+/* 小屏幕（平板） 768px - 992px */
+@media screen and (max-width: 992px) {
+  body {
+    background-color: #FF00FF;
+  }
+}
+
+/* 超小屏幕（手机） < 768px */
+@media screen and (max-width: 768px) {
+  body {
+    background-color: green;
+  }
+}
